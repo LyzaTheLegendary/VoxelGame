@@ -97,29 +97,30 @@ namespace Graphics
             int pointer = buffer.GetPointer();
             BufferTarget target = buffer.GetTarget();
 
-            if (target == BufferTarget.ArrayBuffer)
-                if (currentState.VBO == pointer)
-                    return;
-                else
-                {
-                    currentState.VBO = pointer;
-                    buffer.Bind();
-                }
-            else if (target == BufferTarget.ElementArrayBuffer)
-                if (currentState.IBO == pointer)
-                    return;
-                else
-                {
-                    currentState.IBO = pointer;
-                    buffer.Bind();
-                }
+            //if (target == BufferTarget.ArrayBuffer)
+            //    if (currentState.VBO == pointer)
+            //        return;
+            //    else
+            //    {
+            //        currentState.VBO = pointer;
+            //        buffer.Bind();
+            //    }
+            //else if (target == BufferTarget.ElementArrayBuffer)
+            //    if (currentState.IBO == pointer)
+            //        return;
+            //    else
+            //    {
+            //        currentState.IBO = pointer;
+            //        buffer.Bind();
+            //    }
+            buffer.Bind();
         }
         public void Bind(GpuBufferStructure buffer)
         {
             int pointer = buffer.GetPointer();
 
-            if (currentState.VAO == pointer)
-                return;
+            //if (currentState.VAO == pointer)
+            //    return;
 
             currentState.VAO = pointer;
             buffer.Bind();

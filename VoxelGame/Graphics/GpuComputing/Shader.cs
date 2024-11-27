@@ -51,7 +51,7 @@ namespace Graphics.GpuComputing
             int location = GL.GetUniformLocation(pointer, name);
 
             if (location == -1)
-                throw new ArgumentException($"uniform ${name} does not exist");
+                throw new ArgumentException($"uniform {name} does not exist");
 
             GL.UniformMatrix4(location, true, ref matrix);
         }
@@ -60,7 +60,7 @@ namespace Graphics.GpuComputing
             int location = GL.GetUniformLocation(pointer, name);
 
             if (location == -1)
-                throw new ArgumentException($"uniform ${name} does not exist");
+                throw new ArgumentException($"uniform {name} does not exist");
 
             GL.Uniform3(location, ref vector);
         }
@@ -69,7 +69,7 @@ namespace Graphics.GpuComputing
             int location = GL.GetUniformLocation(pointer, name);
 
             if (location == -1)
-                throw new ArgumentException($"uniform ${name} does not exist");
+                throw new ArgumentException($"uniform {name} does not exist");
 
             GL.Uniform3(location, ref vector);
         }
@@ -78,7 +78,7 @@ namespace Graphics.GpuComputing
             int location = GL.GetUniformLocation(pointer, name);
 
             if (location == -1)
-                throw new ArgumentException($"uniform ${name} does not exist");
+                throw new ArgumentException($"uniform {name} does not exist");
 
             GL.Uniform1(location, number);
         }

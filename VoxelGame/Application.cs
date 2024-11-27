@@ -1,8 +1,10 @@
-﻿using Graphics;
+﻿using Content;
+using Graphics;
 using Graphics.Camera;
 using Graphics.GpuComputing;
 using NativeCalls;
 using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using Resources;
@@ -20,6 +22,8 @@ namespace VoxelGame
         public GraphicsDevice GraphicsDevice { get; set; }
         public Renderer Renderer { get; set; }
         public Storage Storage { get; set; }
+
+        private Shader shader; // temp value
         public Application() : base(GameWindowSettings.Default, new NativeWindowSettings
         {
             API = ContextAPI.OpenGL,
@@ -40,13 +44,13 @@ namespace VoxelGame
             Renderer = new Renderer(GraphicsDevice, Camera.GetProjectionMatrix());
             Storage.Load();
 
-            Shader shader;
+            //Shader shader;
             using (Resource<Shader> resource = Storage.GetResource<Shader>("Shaders/test.shaders"))
                 shader = resource.GetComponent();
 
-            Shape shape;
-            using (Resource<Shape> shapeResource = Storage.GetResource<Shape>("Shapes/cube.shape"))
-                shape = shapeResource.GetComponent();
+            //Shape shape;
+            //using (Resource<Shape> shapeResource = Storage.GetResource<Shape>("Shapes/cube.shape"))
+            //    shape = shapeResource.GetComponent();
             Console.WriteLine("Loaded");
         }
         protected override void OnUnload()
@@ -72,6 +76,14 @@ namespace VoxelGame
         protected override void OnRenderFrame(FrameEventArgs args)
         {
             Renderer.Clear();
+
+            //Shape shape;
+            //using (Resource<Shape> shapeResource = Storage.GetResource<Shape>("Shapes/cube.shape"))
+            //    shape = shapeResource.GetComponent();
+
+
+            Renderer.RenderSingleVoxel(VoxelType.DIRT, new Vector3(0, 0, 0), GameContent.GetShape("cube"), shader, Camera.GetViewMatrix());
+            //Renderer.RenderSingleVoxel(VoxelType.DIRT, new Vector3(0, 0, 0), shape, shader, Camera.GetViewMatrix());
 
             Context.SwapBuffers();
             base.OnRenderFrame(args);

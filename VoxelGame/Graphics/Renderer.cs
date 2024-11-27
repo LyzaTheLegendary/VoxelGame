@@ -24,16 +24,18 @@ namespace Graphics
             GL.Clear(ClearBufferMask.ColorBufferBit);
         }
         public void RenderSingleVoxel(VoxelType type, Vector3 position, Shape shape, Shader shader, Matrix4 viewMatrix)
-        { // each shader should have it's own VAO
-            shader.SetUniform(viewMatrix * Projection, "u_viewProjection");
-            shader.SetUniform(position, "u_voxelTranslation");
-            shader.SetUniform((int)type, "u_voxelType");
+        {
+            device.Bind(shape.BufferStructure);
+            device.Bind(shape.ElementArray);
+            device.Bind(shape.VertexArray);
+            
 
             device.Bind(shader);
-            device.Bind(shape.VertexArray);
-            device.Bind(shape.ElementArray);
+            shader.SetUniform(viewMatrix * Projection, "u_viewProjection");
+            shader.SetUniform(position, "u_pos");
+            shader.SetUniform((int)type, "u_type");
 
-            GL.DrawElements(BeginMode.Triangles, 1, DrawElementsType.UnsignedInt, 0);
+            GL.DrawElements(PrimitiveType.Triangles, 1, DrawElementsType.UnsignedInt, IntPtr.Zero);
         }
 
         public void RenderBatch(VoxelBatch batch, Shader shader, Shape shape, Matrix4 viewMatrix)

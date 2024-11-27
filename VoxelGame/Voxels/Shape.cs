@@ -30,19 +30,25 @@ namespace Voxels
                 for (int i = 0; i < elemLen; i++)
                     elementArray[i] = stream.Read<uint>();
 
-                ElementArray = device.AllocateArray<uint>(elementArray, BufferUsageHint.StaticRead, BufferTarget.ElementArrayBuffer);
 
                 int vertexCount = stream.Read<int>();
-
                 Vector3[] vertices = new Vector3[vertexCount];
 
                 for(int i = 0; i < vertexCount; i++)
                     vertices[i] = stream.Read<Vector3>();
-                
-                VertexArray = device.AllocateArray<Vector3>(vertices, BufferUsageHint.StaticRead, BufferTarget.ArrayBuffer);
 
+                ElementArray = device.AllocateArray<uint>(elementArray, BufferUsageHint.StaticRead, BufferTarget.ElementArrayBuffer);
+                VertexArray = device.AllocateArray<Vector3>(vertices, BufferUsageHint.StaticRead, BufferTarget.ArrayBuffer);
+                VertexArray.Bind();
                 BufferStructure = device.AllocateArrayStructure();
+                BufferStructure.Bind();
                 BufferStructure.AddAttribute<Vector3>(1, VertexAttribType.Float, false, 0, 0);
+
+
+                
+                
+
+
 
                 // TODO: think about VAO structure as now we just assume oh hey it's a vec3 enjoy
             }
