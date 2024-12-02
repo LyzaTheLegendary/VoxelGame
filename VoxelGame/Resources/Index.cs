@@ -3,7 +3,7 @@ using Utils;
 
 namespace Resources
 {
-    public class Index : IResourceFactory
+    public class Index : IComponent
     {
         private int files = 0;
         private ConcurrentDictionary<FileType, List<string>> fileIndex = new();

@@ -1,4 +1,5 @@
 ﻿using OpenTK.Graphics.OpenGL4;
+using System.Runtime.InteropServices;
 
 namespace Graphics.GpuMemory
 {
@@ -14,14 +15,24 @@ namespace Graphics.GpuMemory
         }
         public int GetPointer() => pointer;
         public int Attributes() => attributes.Count;
-        public void AddAttribute<T>(int count, VertexAttribType type, bool normalized = false, int stride = 0, int offset = 0) where T : struct
+        //            GL.VertexArrayAttribFormat(pointer, index, elementCount, type, normalized, offset);
+        //GL.VertexArrayAttribBinding(pointer, index, index);
+        //    GL.EnableVertexArrayAttrib(pointer, index);
+        public void SetVertexArray<T>(GpuArrayBuffer<T> buffer) where T : struct
+        {
+            Bind();
+            buffer.Bind();
+            GL.VertexArrayVertexBuffer(pointer, 0, buffer.GetPointer(), IntPtr.Zero, Marshal.SizeOf<T>());
+        }
+        public void AddAttribute(int elementCount, VertexAttribType type, bool normalized = false, int stride = 0, int offset = 0)
         {
             int index = attributes.Count;
             attributes.Add(index);
 
-
-            GL.VertexArrayAttribFormat(pointer, index, count, type, normalized, offset);
             GL.EnableVertexArrayAttrib(pointer, index);
+            GL.VertexArrayAttribBinding(pointer, index, 0);
+            GL.VertexArrayAttribFormat(pointer, index, elementCount, type, normalized, offset);
+
         }
         public void RemoveAttribute(int index)
         {
@@ -29,6 +40,7 @@ namespace Graphics.GpuMemory
             GL.DisableVertexArrayAttrib(pointer, index);
         }
         public void Bind() => GL.BindVertexArray(pointer);
+        public void UnBind() => GL.BindVertexArray(0);
         public void Delete()
         {
             if (pointer != -1)
@@ -53,10 +65,8 @@ namespace Graphics.GpuMemory
             }
         }
 
-        ~GpuBufferStructure()
-        {
-            Dispose(disposing: false);
-        }
+        ~GpuBufferStructure() => UnBind();
+        
 
         public void Dispose()
         {

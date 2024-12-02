@@ -8,30 +8,31 @@ namespace Graphics.GpuMemory
         public readonly BufferUsageHint usage;
         private readonly BufferTarget bufferTarget;
         private int pointer;
-        private int size;
+        private int elements;
         private bool disposedValue;
 
         public GpuArrayBuffer(BufferUsageHint usage, int pointer, BufferTarget bufferTarget)
         {
             this.usage = usage;
             this.pointer = pointer;
-            size = 0;
+            elements = 0;
             this.bufferTarget = bufferTarget;
         }
 
-        ~GpuArrayBuffer() => Dispose(disposing: false);
+        ~GpuArrayBuffer() => UnBind();
         public int GetPointer() => pointer;
+        public int GetCount() => elements;
         public BufferTarget GetTarget() => bufferTarget;
         public void Bind() => GL.BindBuffer(bufferTarget, pointer);
-        
+        public void UnBind() => GL.BindBuffer(bufferTarget, 0);
         public void Upload(IEnumerable<T> data)
         {
             if (data is null) throw new ArgumentNullException(nameof(data));
 
             T[] dataArray = data as T[] ?? data.ToArray();
-            size = dataArray.Length;
 
-            GL.NamedBufferData(pointer, size * Marshal.SizeOf<T>(), dataArray, usage);
+            GL.NamedBufferData(pointer, dataArray.Length * Marshal.SizeOf<T>(), dataArray, usage);
+            elements = dataArray.Length; // Update only after the operation
         }
 
         public void Delete()

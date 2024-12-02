@@ -4,11 +4,12 @@
     {
         SHAPE,
         TRANSLATION,
-        IMAGE,
+        TEXTURE,
+        TEXTURE_ATLAS,
         SHADER,
         INDEX,
     }
-    public interface IResource<T> : IDisposable where T:IResourceFactory
+    public interface IResource<T> : IDisposable where T:IComponent
     {
         public string Filename { get; init; }
         public FileType Type { get; init; }

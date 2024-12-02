@@ -4,6 +4,7 @@ using System.Buffers;
 using System.IO;
 using System.Runtime.InteropServices;
 using Utils;
+using VoxelGame.Utils;
 using Voxels;
 
 namespace Resources
@@ -20,12 +21,19 @@ namespace Resources
         }
         public void StoreResource(ICreatorService creator) // this could be done by a thread
         {
-            IEnumerable<byte> data = creator.GetResource();
+            FileHeader header = new FileHeader()
+            {
+                Type = creator.FileType,
+                Version = 1,
+                Flags = 0
+            };
+
+            IEnumerable<byte> data = MarshalHelper.ToBytes(header).Concat(creator.GetResource());
 
             index.AddReference(creator.FileType, creator.Filename);
             File.WriteAllBytes(Path.Combine(RESOURCE_PATH, Path.Combine(creator.Filename)), data as byte[] ?? data.ToArray());
         }
-        public Resource<T> GetResource<T>(string filename) where T : IResourceFactory
+        public Resource<T> GetResource<T>(string filename) where T : IComponent
         {
             using (FileStream fs = File.Open(Path.Combine(RESOURCE_PATH, filename), FileMode.Open))
             {

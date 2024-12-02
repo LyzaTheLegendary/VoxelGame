@@ -5,7 +5,7 @@ using Resources;
 
 namespace Graphics.GpuComputing
 {
-    public class Shader : IDisposable, IResourceFactory
+    public class Shader : IDisposable, IComponent
     {
         public string Name { get; private set; }
 

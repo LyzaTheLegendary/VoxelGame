@@ -1,6 +1,6 @@
 ﻿using Resources;
 
-public class Resource<T> : IResource<T> where T : IResourceFactory
+public class Resource<T> : IResource<T> where T : IComponent
 {
     public string Filename { get; init; }
     public FileType Type { get; init; }

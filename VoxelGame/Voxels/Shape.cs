@@ -7,14 +7,14 @@ using VoxelGame;
 using OpenTK.Graphics.OpenGL4;
 namespace Voxels
 {
-    public class Shape : IResourceFactory, IDisposable
+    public class Shape() : IComponent, IDisposable
     {
         private bool disposedValue;
 
-        public Shape() { }
         public string Name { get; private set; }
         public GpuArrayBuffer<uint> ElementArray { get; private set; }
         public GpuArrayBuffer<Vector3> VertexArray { get; private set; }
+        public GpuArrayBuffer<Vector2> UniformArray { get; private set; }
         public GpuBufferStructure BufferStructure { get; private set; }
 
         public void CreateResourceFromData(IEnumerable<byte> data)
@@ -23,34 +23,37 @@ namespace Voxels
             using (MemoryStream stream = new MemoryStream(data as byte[] ?? data.ToArray()))
             {
                 Name = stream.ReadString();
-                int elemLen = stream.Read<int>(); 
+                int elementCount = stream.Read<int>();
 
-                uint[] elementArray = new uint[elemLen];
+                uint[] elementArray = new uint[elementCount];
 
-                for (int i = 0; i < elemLen; i++)
+                for (int i = 0; i < elementCount; i++)
                     elementArray[i] = stream.Read<uint>();
-
 
                 int vertexCount = stream.Read<int>();
                 Vector3[] vertices = new Vector3[vertexCount];
 
-                for(int i = 0; i < vertexCount; i++)
+                for (int i = 0; i < vertexCount; i++)
                     vertices[i] = stream.Read<Vector3>();
 
-                ElementArray = device.AllocateArray<uint>(elementArray, BufferUsageHint.StaticRead, BufferTarget.ElementArrayBuffer);
-                VertexArray = device.AllocateArray<Vector3>(vertices, BufferUsageHint.StaticRead, BufferTarget.ArrayBuffer);
-                VertexArray.Bind();
+                int uniformCount = stream.Read<int>();
+
+                Vector2[] uniforms = new Vector2[uniformCount];
+
+                for(int i = 0; i < uniformCount; i++)
+                    uniforms[i] = stream.Read<Vector2>();
+
                 BufferStructure = device.AllocateArrayStructure();
-                BufferStructure.Bind();
-                BufferStructure.AddAttribute<Vector3>(1, VertexAttribType.Float, false, 0, 0);
-
-
                 
-                
+                VertexArray = device.AllocateArray<Vector3>(vertices, BufferUsageHint.StaticRead, BufferTarget.ArrayBuffer);
+                ElementArray = device.AllocateArray<uint>(elementArray, BufferUsageHint.StaticRead, BufferTarget.ElementArrayBuffer);
+                UniformArray = device.AllocateArray<Vector2>(uniforms, BufferUsageHint.StaticRead, BufferTarget.ArrayBuffer);
 
+                BufferStructure.SetVertexArray(VertexArray);
+                BufferStructure.AddAttribute(3, VertexAttribType.Float, false, 0, 0);
+                BufferStructure.SetVertexArray(UniformArray);
+                BufferStructure.AddAttribute(2, VertexAttribType.Float, false, 0, 0);
 
-
-                // TODO: think about VAO structure as now we just assume oh hey it's a vec3 enjoy
             }
         }
 

@@ -74,7 +74,12 @@ namespace Graphics
         }
         public GpuArrayBuffer<T> AllocateArray<T>(IEnumerable<T>? data, BufferUsageHint hint, BufferTarget bufferTarget) where T : struct
         {
-            var buffer = new GpuArrayBuffer<T>(hint, GL.GenBuffer(), bufferTarget);
+            GL.CreateBuffers(1, out int pointer);
+
+            if (pointer == 0 || !GL.IsBuffer(pointer))
+                throw new Exception("Failed to allocate GL buffer of type: " + bufferTarget);
+
+            var buffer = new GpuArrayBuffer<T>(hint, pointer, bufferTarget);
 
             if (data is not null)
                 buffer.Upload(data);

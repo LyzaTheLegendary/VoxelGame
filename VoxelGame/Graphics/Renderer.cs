@@ -25,17 +25,16 @@ namespace Graphics
         }
         public void RenderSingleVoxel(VoxelType type, Vector3 position, Shape shape, Shader shader, Matrix4 viewMatrix)
         {
+            device.Bind(shader);
             device.Bind(shape.BufferStructure);
             device.Bind(shape.ElementArray);
             device.Bind(shape.VertexArray);
-            
 
-            device.Bind(shader);
             shader.SetUniform(viewMatrix * Projection, "u_viewProjection");
             shader.SetUniform(position, "u_pos");
-            shader.SetUniform((int)type, "u_type");
+            //shader.SetUniform((int)type, "u_type");
 
-            GL.DrawElements(PrimitiveType.Triangles, 1, DrawElementsType.UnsignedInt, IntPtr.Zero);
+            GL.DrawElements(PrimitiveType.Triangles, shape.ElementArray.GetCount(), DrawElementsType.UnsignedInt, IntPtr.Zero);
         }
 
         public void RenderBatch(VoxelBatch batch, Shader shader, Shape shape, Matrix4 viewMatrix)

@@ -1,6 +1,6 @@
 ﻿namespace Resources
 {
-    public interface IResourceFactory
+    public interface IComponent
     {
         public void CreateResourceFromData(IEnumerable<byte> data);
     }

@@ -1,5 +1,4 @@
 ﻿using OpenTK.Mathematics;
-using Resources.Creators;
 
 using Utils;
 
@@ -9,20 +8,13 @@ namespace Resources.Creators
     {
         public string Filename { get; init; }
         public FileType FileType { get {  return FileType.SHAPE; } }
-        IEnumerable<byte> data;
-        public ShapeCreatorService(string filename, string shapeName, uint[] indices, Vector3[] vertices)
+        private IEnumerable<byte> data;
+        public ShapeCreatorService(string filename, string shapeName, uint[] indices, Vector3[] vertices, Vector2[] uniforms)
         {
             Filename = filename;
 
             List<byte> data = new List<byte>();
-            FileHeader header = new FileHeader()
-            {
-                Flags = 0,
-                Version = 1,
-                Type = FileType.SHAPE
-            };
 
-            data.Write(header);
             data.Write(shapeName);
             data.Write<int>(indices.Length);
 
@@ -33,6 +25,11 @@ namespace Resources.Creators
 
             for (int i = 0; i < vertices.Length; i++)
                 data.Write(vertices[i]);
+
+            data.Write<int>(uniforms.Length);
+
+            for(int i = 0; i < uniforms.Length; i++)
+                data.Write(uniforms[i]);
 
             this.data = data;
         }

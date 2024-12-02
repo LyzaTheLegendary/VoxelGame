@@ -18,13 +18,6 @@ namespace Resources.Creators
             Filename = filename;
             data = new();
 
-            FileHeader header = new FileHeader()
-            {
-                Flags = 0,
-                Version = 1,
-                Type = FileType.SHADER
-            };
-            data.Write(header);
             data.Write(filename);
             data.Write((byte)shaderData.Length);
             foreach (ShaderCreatorData shader in shaderData)
