@@ -1,7 +1,9 @@
 ﻿using Graphics.GpuComputing;
 using Graphics.GpuMemory;
 using OpenTK.Graphics.OpenGL4;
+using Resources.Components;
 using System.Runtime.InteropServices;
+using Graphics.GpuTextures;
 
 namespace Graphics
 {
@@ -23,6 +25,7 @@ namespace Graphics
         public int VAO { get; set; }
         public int VBO { get; set; }
         public int IBO { get; set; }
+        public int TEX2D { get; set; }
     }
 
     public class GraphicsDevice
@@ -97,35 +100,50 @@ namespace Graphics
         {
             return new GpuBufferStructure(GL.GenVertexArray());
         }
+        public Texture2D AllocateTexture(Bitmap bitmap, TextureUnit unit)
+        {
+            GL.GenTextures(1, out int pointer);
+
+            if(pointer is 0)
+                throw new Exception("Failed to allocate GL texture");
+
+            Texture2D texture = new Texture2D(bitmap.Format, unit, pointer);
+
+            if(bitmap is not null)
+                texture.Upload(bitmap.Data, bitmap.Width, bitmap.Height);
+
+            return texture;
+        }
         public void Bind<T>(GpuArrayBuffer<T> buffer) where T : struct
         {
             int pointer = buffer.GetPointer();
             BufferTarget target = buffer.GetTarget();
 
-            //if (target == BufferTarget.ArrayBuffer)
-            //    if (currentState.VBO == pointer)
-            //        return;
-            //    else
-            //    {
-            //        currentState.VBO = pointer;
-            //        buffer.Bind();
-            //    }
-            //else if (target == BufferTarget.ElementArrayBuffer)
-            //    if (currentState.IBO == pointer)
-            //        return;
-            //    else
-            //    {
-            //        currentState.IBO = pointer;
-            //        buffer.Bind();
-            //    }
+            if (target == BufferTarget.ArrayBuffer)
+                if (currentState.VBO == pointer)
+                    return;
+                else
+                {
+                    currentState.VBO = pointer;
+                    buffer.Bind();
+                }
+            else if (target == BufferTarget.ElementArrayBuffer)
+                if (currentState.IBO == pointer)
+                    return;
+                else
+                {
+                    currentState.IBO = pointer;
+                    buffer.Bind();
+                }
+
             buffer.Bind();
         }
         public void Bind(GpuBufferStructure buffer)
         {
             int pointer = buffer.GetPointer();
 
-            //if (currentState.VAO == pointer)
-            //    return;
+            if (currentState.VAO == pointer)
+                return;
 
             currentState.VAO = pointer;
             buffer.Bind();
@@ -143,6 +161,14 @@ namespace Graphics
         public void Bind<T>(GpuShaderStorageBuffer<T> buffer) where T : struct // we're not caching which buffers we have now.
         {
             GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, buffer.GetBindingPoint(), buffer.GetPointer());
+        }
+        public void Bind(Texture2D texture)
+        {
+            if(currentState.TEX2D == texture.GetPointer())
+                return;
+
+            currentState.TEX2D = texture.GetPointer();
+            texture.Bind();
         }
         private long QueryAvailableMemory(int queryCode)
         {

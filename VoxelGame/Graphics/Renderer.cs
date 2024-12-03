@@ -1,5 +1,6 @@
 ﻿using Graphics.GpuComputing;
 using Graphics.GpuMemory;
+using Graphics.GpuTextures;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using Voxels;
@@ -20,20 +21,25 @@ namespace Graphics
         }
         public void Clear()
         {
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.ClearColor(Background);
-            GL.Clear(ClearBufferMask.ColorBufferBit);
         }
-        public void RenderSingleVoxel(VoxelType type, Vector3 position, Shape shape, Shader shader, Matrix4 viewMatrix)
+        public void RenderSingleVoxel(VoxelType type, Vector3 position, Shape shape, Shader shader, Texture2D texture, Matrix4 viewMatrix)
         {
             device.Bind(shader);
             device.Bind(shape.BufferStructure);
             device.Bind(shape.ElementArray);
             device.Bind(shape.VertexArray);
+            device.Bind(texture);
 
-            shader.SetUniform(viewMatrix * Projection, "u_viewProjection");
-            shader.SetUniform(position, "u_pos");
+            //shader.SetUniform(Matrix4.Identity * viewMatrix * Projection, "u_viewProjection");
+            //shader.SetUniform(position, "u_pos");
+            //shader.SetUniform(, "u_pos");
             //shader.SetUniform((int)type, "u_type");
-
+            shader.SetUniform(viewMatrix, "u_view");
+            shader.SetUniform(Projection, "u_projection");
+            //shader.SetUniform(Matrix4.Identity, "u_model");
+            
             GL.DrawElements(PrimitiveType.Triangles, shape.ElementArray.GetCount(), DrawElementsType.UnsignedInt, IntPtr.Zero);
         }
 

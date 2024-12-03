@@ -4,13 +4,15 @@ using Utils;
 
 namespace Resources.Creators
 {
-    public class Texture2DCreatorService : ICreatorService
+    public class BitmapCreatorService : ICreatorService
     {
         public string Filename { get; init; }
         public FileType FileType => FileType.TEXTURE;
         private PixelInternalFormat pixelFormat;
+        private int height;
+        private int width;
         private byte[] bitmap;
-        public Texture2DCreatorService(string filename, byte[] imageData)
+        public BitmapCreatorService(string filename, byte[] imageData)
         {
             Filename = filename;
 
@@ -29,6 +31,9 @@ namespace Resources.Creators
                     throw new ArgumentException("Unsupported pixel format");
             }
 
+            height = result.Height;
+            width = result.Width;
+
             bitmap = result.Data;
         }
         public IEnumerable<byte> GetResource()
@@ -36,6 +41,10 @@ namespace Resources.Creators
             var data = new List<byte>();
 
             data.Write((int)pixelFormat);
+            data.Write(height);
+            data.Write(width);
+
+            data.Write(bitmap.Length);
             data.AddRange(bitmap);
 
             return data;

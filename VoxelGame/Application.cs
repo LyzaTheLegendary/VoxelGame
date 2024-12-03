@@ -9,7 +9,10 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using Resources;
 using System.Runtime.InteropServices;
+using Graphics.GpuTextures;
 using Voxels;
+using Resources.Components;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 
 
 namespace VoxelGame
@@ -25,8 +28,8 @@ namespace VoxelGame
         public Storage Storage { get; set; }
 
         private Shader shader; // temp value
-
-        private Vector3 tempPos = new Vector3(0, 0, 0);
+        private Texture2D texture; // temp val
+        private Vector3 tempPos = new Vector3(0, 0, 0);// temp val
         public Application() : base(GameWindowSettings.Default, new NativeWindowSettings
         {
             API = ContextAPI.OpenGL,
@@ -64,8 +67,12 @@ namespace VoxelGame
         protected override void OnLoad()
         {
             base.OnLoad();
+            CursorState = CursorState.Grabbed;
+
             GraphicsDevice = new GraphicsDevice();
             Renderer = new Renderer(GraphicsDevice, Camera.GetProjectionMatrix());
+            GL.Enable(EnableCap.DepthTest);
+            GL.DepthFunc(DepthFunction.Less);
 #if DEBUG
             GL.DebugMessageCallback(OnDebugMessage, IntPtr.Zero);
             GL.Enable(EnableCap.DebugOutput);
@@ -79,6 +86,9 @@ namespace VoxelGame
             using (Resource<Shader> resource = Storage.GetResource<Shader>("Shaders/test.shaders"))
                 shader = resource.GetComponent();
 
+            using(Resource<Bitmap> Resource = Storage.GetResource<Bitmap>("Textures/test.bitmap"))
+                texture = GraphicsDevice.AllocateTexture(Resource.GetComponent(), TextureUnit.Texture0);
+            
             //Shape shape;
             //using (Resource<Shape> shapeResource = Storage.GetResource<Shape>("Shapes/cube.shape"))
             //    shape = shapeResource.GetComponent();
@@ -99,6 +109,8 @@ namespace VoxelGame
 
         protected override void OnUpdateFrame(FrameEventArgs args)
         {
+            if (KeyboardState.IsKeyDown(Keys.Escape))
+                Environment.Exit(0);
 
             Camera.InputController(this.KeyboardState, this.MouseState, (float)args.Time);
             base.OnUpdateFrame(args);
@@ -108,13 +120,8 @@ namespace VoxelGame
         {
             Renderer.Clear();
 
-            //Shape shape;
-            //using (Resource<Shape> shapeResource = Storage.GetResource<Shape>("Shapes/cube.shape"))
-            //    shape = shapeResource.GetComponent();
-
-
-            Renderer.RenderSingleVoxel(VoxelType.DIRT, tempPos, GameContent.GetShape("cube"), shader, Camera.GetViewMatrix());
-            //Renderer.RenderSingleVoxel(VoxelType.DIRT, new Vector3(0, 0, 0), shape, shader, Camera.GetViewMatrix());
+            Renderer.RenderSingleVoxel(VoxelType.DIRT, tempPos, GameContent.GetShape("cube"), shader, texture, Camera.GetViewMatrix());
+            
 
             Context.SwapBuffers();
             base.OnRenderFrame(args);

@@ -1,4 +1,5 @@
-﻿using Graphics.GpuComputing;
+﻿using Graphics;
+using Graphics.GpuComputing;
 using OpenTK.Mathematics;
 using Resources;
 using Resources.Creators;
@@ -21,10 +22,17 @@ internal class Program
 
         Application application = new Application();
         Storage storage = application.Storage;
+        AddImagetoStorage(storage);
         AddCubeToStorage(storage);
         AddShaderToStorage(storage);
 
         application.Run();
+    }
+
+    public static void AddImagetoStorage(Storage storage)
+    {
+        byte[] image = File.ReadAllBytes("test.png");
+        storage.StoreResource(new BitmapCreatorService("Textures/test.bitmap", image));
     }
     public static  void AddShaderToStorage(Storage storage)
     {
@@ -51,7 +59,7 @@ internal class Program
     public static void AddCubeToStorage(Storage storage)
     {
         Vector3[] cubeVerts = new Vector3[]
-{
+        {
             new Vector3(-0.5f, 0.5f, 0.5f), // topleft vert
             new Vector3(0.5f, 0.5f, 0.5f), // topright vert
             new Vector3(0.5f, -0.5f, 0.5f), // bottomright vert
@@ -81,7 +89,7 @@ internal class Program
             new Vector3(0.5f, -0.5f, 0.5f), // topright vert
             new Vector3(0.5f, -0.5f, -0.5f), // bottomright vert
             new Vector3(-0.5f, -0.5f, -0.5f), // bottomleft vert
-};
+        };
 
         uint[] cubeIndices =
         {
@@ -139,6 +147,17 @@ internal class Program
             new Vector2(0f, 0f),
         };
 
-        storage.StoreResource(new ShapeCreatorService("Shapes/cube.shape", "cube", cubeIndices, cubeVerts, texCoords));
+        Vertex[] vertices = new Vertex[cubeVerts.Length];
+
+        for(int i = 0; i < vertices.Length; i++)
+        {
+            vertices[i] = new Vertex()
+            {
+                Position = cubeVerts[i],
+                TexCoord = texCoords[i]
+            };
+        }
+
+        storage.StoreResource(new ShapeCreatorService("Shapes/cube.shape", "cube", vertices, cubeIndices));
     }
 }

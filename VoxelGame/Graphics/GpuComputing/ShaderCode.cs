@@ -26,6 +26,7 @@ namespace Graphics.GpuComputing
                 string infoLog = GL.GetShaderInfoLog(pointer);
                 throw new Exception(infoLog);
             }
+
             compiled = true;
         }
 

@@ -43,7 +43,7 @@ namespace Graphics.Camera {
             Yaw = yaw;
             Pitch = pitch;
             lastPos = new Vector2(0f, 0f);
-            Front = new Vector3(0.0f, 0.0f, -1.0f);
+            Front = new Vector3(0.0f, 0.0f, -1.0f); // probably shouldn't be -1f but idk it works lol
             UpdateCameraVectors();
         }
 
@@ -103,7 +103,15 @@ namespace Graphics.Camera {
             float deltaY = mouse.Y - lastPos.Y;
             lastPos = currentPos;
 
-            Yaw += deltaX * SENSITIVITY * time; // check if it's more than 180 degrees up or down and otherwise ignore it
+            if(Yaw + deltaX * SENSITIVITY * time > 180f || Yaw + deltaX * SENSITIVITY * time < -180f)
+            {
+                Yaw = 0f;
+            }
+            else
+            {
+                Yaw += deltaX * SENSITIVITY * time; // check if it's more than 180 degrees up or down and otherwise ignore it
+            }
+
             Pitch -= deltaY * SENSITIVITY * time;
 
             UpdateCameraVectors();

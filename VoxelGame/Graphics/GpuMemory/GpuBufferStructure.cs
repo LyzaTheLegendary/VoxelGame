@@ -15,16 +15,14 @@ namespace Graphics.GpuMemory
         }
         public int GetPointer() => pointer;
         public int Attributes() => attributes.Count;
-        //            GL.VertexArrayAttribFormat(pointer, index, elementCount, type, normalized, offset);
-        //GL.VertexArrayAttribBinding(pointer, index, index);
-        //    GL.EnableVertexArrayAttrib(pointer, index);
+
         public void SetVertexArray<T>(GpuArrayBuffer<T> buffer) where T : struct
         {
             Bind();
             buffer.Bind();
             GL.VertexArrayVertexBuffer(pointer, 0, buffer.GetPointer(), IntPtr.Zero, Marshal.SizeOf<T>());
         }
-        public void AddAttribute(int elementCount, VertexAttribType type, bool normalized = false, int stride = 0, int offset = 0)
+        public void AddAttribute(int elementCount, VertexAttribType type, bool normalized = false, int offset = 0)
         {
             int index = attributes.Count;
             attributes.Add(index);
@@ -32,6 +30,7 @@ namespace Graphics.GpuMemory
             GL.EnableVertexArrayAttrib(pointer, index);
             GL.VertexArrayAttribBinding(pointer, index, 0);
             GL.VertexArrayAttribFormat(pointer, index, elementCount, type, normalized, offset);
+            
 
         }
         public void RemoveAttribute(int index)
