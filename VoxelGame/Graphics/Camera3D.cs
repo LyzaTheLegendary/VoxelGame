@@ -103,15 +103,8 @@ namespace Graphics.Camera {
             float deltaY = mouse.Y - lastPos.Y;
             lastPos = currentPos;
 
-            if(Yaw + deltaX * SENSITIVITY * time > 180f || Yaw + deltaX * SENSITIVITY * time < -180f)
-            {
-                Yaw = 0f;
-            }
-            else
-            {
-                Yaw += deltaX * SENSITIVITY * time; // check if it's more than 180 degrees up or down and otherwise ignore it
-            }
 
+            Yaw += deltaX * SENSITIVITY * time;
             Pitch -= deltaY * SENSITIVITY * time;
 
             UpdateCameraVectors();

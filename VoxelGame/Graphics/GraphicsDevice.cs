@@ -100,19 +100,33 @@ namespace Graphics
         {
             return new GpuBufferStructure(GL.GenVertexArray());
         }
-        public Texture2D AllocateTexture(Bitmap bitmap, TextureUnit unit)
+        public Texture2D AllocateTexture(Bitmap? bitmap, TextureUnit unit)
         {
             GL.GenTextures(1, out int pointer);
 
             if(pointer is 0)
                 throw new Exception("Failed to allocate GL texture");
 
-            Texture2D texture = new Texture2D(bitmap.Format, unit, pointer);
+            Texture2D texture = new Texture2D(unit, pointer);
 
             if(bitmap is not null)
-                texture.Upload(bitmap.Data, bitmap.Width, bitmap.Height);
+                texture.Upload(bitmap);
 
             return texture;
+        }
+        public TextureAtlas2D AllocateTextureAtlas(Bitmap? bitmap, TextureUnit unit)
+        {
+            GL.GenTextures(1, out int pointer);
+
+            if (pointer is 0)
+                throw new Exception("Failed to allocate GL texture");
+
+            TextureAtlas2D textureAtlas = new TextureAtlas2D(unit, pointer);
+
+            if(bitmap is not null)
+                textureAtlas.Upload(bitmap);
+
+            return textureAtlas;
         }
         public void Bind<T>(GpuArrayBuffer<T> buffer) where T : struct
         {
@@ -170,6 +184,15 @@ namespace Graphics
             currentState.TEX2D = texture.GetPointer();
             texture.Bind();
         }
+        public void Bind(TextureAtlas2D texture)
+        {
+            if (currentState.TEX2D == texture.GetPointer())
+                return;
+
+            currentState.TEX2D = texture.GetPointer();
+            texture.Bind();
+        }
+
         private long QueryAvailableMemory(int queryCode)
         {
             GL.GetInteger((GetPName)queryCode, out int availableMemoryKb);

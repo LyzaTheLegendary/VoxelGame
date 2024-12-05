@@ -31,8 +31,8 @@ internal class Program
 
     public static void AddImagetoStorage(Storage storage)
     {
-        byte[] image = File.ReadAllBytes("test.png");
-        storage.StoreResource(new BitmapCreatorService("Textures/test.bitmap", image));
+        byte[] image = File.ReadAllBytes("BlockAtlas.png");
+        storage.StoreResource(new BitmapCreatorService("Textures/BlockAtlas.bitmap", image, true, 16, 16));
     }
     public static  void AddShaderToStorage(Storage storage)
     {

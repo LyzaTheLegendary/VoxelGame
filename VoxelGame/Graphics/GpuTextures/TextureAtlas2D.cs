@@ -3,26 +3,32 @@ using Resources.Components;
 
 namespace Graphics.GpuTextures
 {
-    public class Texture2D : IDisposable
+    public class TextureAtlas2D : IDisposable
     {
         public PixelFormat Format { get; private set; } = (PixelFormat)999;
         public TextureUnit TextureUnit { get; private set; }
         public int Height { get; private set; } = 0;
         public int Width { get; private set; } = 0;
         public int Size { get; private set; } = 0;
-        private int pointer = 0;
-        private bool disposedValue;
-        public Texture2D(TextureUnit textureUnit, int pointer)
+        public int Rows { get; private set; } = 0;
+        public int Columns { get; private set; } = 0;
+
+        private int pointer;
+        private bool disposedValue = false;
+        public TextureAtlas2D(TextureUnit textureUnit, int pointer)
         {
-            TextureUnit  = textureUnit;
+            TextureUnit = textureUnit;
             this.pointer = pointer;
         }
 
         public void Upload(Bitmap bitmap)
         {
+            Format = bitmap.Format;
             Height = bitmap.Height;
             Width = bitmap.Width;
-            Size = bitmap.Data.Length;
+            Size = bitmap.Width * bitmap.Height;
+            Rows = bitmap.Rows;
+            Columns = bitmap.Columns;
 
             GL.ActiveTexture(TextureUnit);
             GL.BindTexture(TextureTarget.Texture2D, pointer);
@@ -49,7 +55,6 @@ namespace Graphics.GpuTextures
                 disposedValue = true;
             }
         }
-
         public void Dispose()
         {
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method

@@ -24,21 +24,18 @@ namespace Graphics
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.ClearColor(Background);
         }
-        public void RenderSingleVoxel(VoxelType type, Vector3 position, Shape shape, Shader shader, Texture2D texture, Matrix4 viewMatrix)
+        public void RenderSingleVoxel(VoxelType type, Vector3 position, Shape shape, Shader shader, TextureAtlas2D texture, Matrix4 viewMatrix)
         {
+            // start using quaternions for the camera! to prevent gambol locks
             device.Bind(shader);
             device.Bind(shape.BufferStructure);
             device.Bind(shape.ElementArray);
             device.Bind(shape.VertexArray);
             device.Bind(texture);
 
-            //shader.SetUniform(Matrix4.Identity * viewMatrix * Projection, "u_viewProjection");
-            //shader.SetUniform(position, "u_pos");
-            //shader.SetUniform(, "u_pos");
-            //shader.SetUniform((int)type, "u_type");
-            shader.SetUniform(viewMatrix, "u_view");
-            shader.SetUniform(Projection, "u_projection");
-            //shader.SetUniform(Matrix4.Identity, "u_model");
+            shader.SetUniform(Matrix4.CreateTranslation(position) * viewMatrix * Projection, "u_transformations");
+            shader.SetUniform(texture.Columns, "u_columns");
+            shader.SetUniform((int)type, "u_index");
             
             GL.DrawElements(PrimitiveType.Triangles, shape.ElementArray.GetCount(), DrawElementsType.UnsignedInt, IntPtr.Zero);
         }

@@ -13,6 +13,7 @@ using Graphics.GpuTextures;
 using Voxels;
 using Resources.Components;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using ImGuiNET;
 
 
 namespace VoxelGame
@@ -28,8 +29,9 @@ namespace VoxelGame
         public Storage Storage { get; set; }
 
         private Shader shader; // temp value
-        private Texture2D texture; // temp val
+        private TextureAtlas2D texture; // temp val
         private Vector3 tempPos = new Vector3(0, 0, 0);// temp val
+
         public Application() : base(GameWindowSettings.Default, new NativeWindowSettings
         {
             API = ContextAPI.OpenGL,
@@ -79,6 +81,7 @@ namespace VoxelGame
 
             // Optionally
             GL.Enable(EnableCap.DebugOutputSynchronous);
+
 #endif
             Storage.Load();
 
@@ -86,12 +89,9 @@ namespace VoxelGame
             using (Resource<Shader> resource = Storage.GetResource<Shader>("Shaders/test.shaders"))
                 shader = resource.GetComponent();
 
-            using(Resource<Bitmap> Resource = Storage.GetResource<Bitmap>("Textures/test.bitmap"))
-                texture = GraphicsDevice.AllocateTexture(Resource.GetComponent(), TextureUnit.Texture0);
+            using(Resource<Bitmap> Resource = Storage.GetResource<Bitmap>("Textures/BlockAtlas.bitmap"))
+                texture = GraphicsDevice.AllocateTextureAtlas(Resource.GetComponent(), TextureUnit.Texture0);
             
-            //Shape shape;
-            //using (Resource<Shape> shapeResource = Storage.GetResource<Shape>("Shapes/cube.shape"))
-            //    shape = shapeResource.GetComponent();
             Console.WriteLine("Loaded");
         }
         protected override void OnUnload()
@@ -103,7 +103,7 @@ namespace VoxelGame
         {
             base.OnResize(e);
             GL.Viewport(0,0, e.Width, e.Height);
-            Camera.UpdateFov((float)e.Width, (float)e.Height);
+            Camera.UpdateFov(e.Width, e.Height);
             Renderer.Projection = Camera.GetProjectionMatrix();
         }
 
@@ -118,11 +118,11 @@ namespace VoxelGame
 
         protected override void OnRenderFrame(FrameEventArgs args)
         {
+
             Renderer.Clear();
-
             Renderer.RenderSingleVoxel(VoxelType.DIRT, tempPos, GameContent.GetShape("cube"), shader, texture, Camera.GetViewMatrix());
-            
 
+            
             Context.SwapBuffers();
             base.OnRenderFrame(args);
         }
