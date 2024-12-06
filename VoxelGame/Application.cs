@@ -20,7 +20,7 @@ namespace VoxelGame
 {
     public class Application : GameWindow
     {
-        public static Application Instance { get; private set; }
+        public static Application Instance { get; set; }
 
         public readonly MonitorStruct m_monitorInfo = new MonitorStruct();
         public Camera3D Camera { get; private set; }
@@ -40,9 +40,7 @@ namespace VoxelGame
 #if DEBUG
             Flags = ContextFlags.Debug
 #endif
-        }
-        
-        )
+        })
         {
             Camera = new Camera3D(45f, 1920f, 1080f);
             Storage = new Storage();
@@ -91,8 +89,6 @@ namespace VoxelGame
 
             using(Resource<Bitmap> Resource = Storage.GetResource<Bitmap>("Textures/BlockAtlas.bitmap"))
                 texture = GraphicsDevice.AllocateTextureAtlas(Resource.GetComponent(), TextureUnit.Texture0);
-            
-            Console.WriteLine("Loaded");
         }
         protected override void OnUnload()
         {

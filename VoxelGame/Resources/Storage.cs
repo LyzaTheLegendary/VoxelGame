@@ -21,6 +21,13 @@ namespace Resources
         }
         public void StoreResource(ICreatorService creator) // this could be done by a thread
         {
+            string path = Path.Combine(RESOURCE_PATH, Path.Combine(creator.Filename));
+            string? directory = Path.GetDirectoryName(path);
+
+            if (!string.IsNullOrEmpty(directory))
+                Directory.CreateDirectory(directory);
+            
+
             FileHeader header = new FileHeader()
             {
                 Type = creator.FileType,
@@ -30,8 +37,9 @@ namespace Resources
 
             IEnumerable<byte> data = MarshalHelper.ToBytes(header).Concat(creator.GetResource());
 
+            
             index.AddReference(creator.FileType, creator.Filename);
-            File.WriteAllBytes(Path.Combine(RESOURCE_PATH, Path.Combine(creator.Filename)), data as byte[] ?? data.ToArray());
+            File.WriteAllBytes(path, data as byte[] ?? data.ToArray());
         }
         public Resource<T> GetResource<T>(string filename) where T : IComponent
         {
