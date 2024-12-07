@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\VoxelGame\VoxelGame.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Packet\ClientBound\" />
+    <Folder Include="Packet\ServerBound\" />
+  </ItemGroup>
+
+</Project>

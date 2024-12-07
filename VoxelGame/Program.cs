@@ -58,37 +58,43 @@ internal class Program
     }
     public static void AddCubeToStorage(Storage storage)
     {
-        Vector3[] cubeVerts = new Vector3[]
+        List<Vertex> vertices = new List<Vertex>
         {
-            new Vector3(-0.5f, 0.5f, 0.5f), // topleft vert
-            new Vector3(0.5f, 0.5f, 0.5f), // topright vert
-            new Vector3(0.5f, -0.5f, 0.5f), // bottomright vert
-            new Vector3(-0.5f, -0.5f, 0.5f), // bottomleft vert
-            // right face
-            new Vector3(0.5f, 0.5f, 0.5f), // topleft vert
-            new Vector3(0.5f, 0.5f, -0.5f), // topright vert
-            new Vector3(0.5f, -0.5f, -0.5f), // bottomright vert
-            new Vector3(0.5f, -0.5f, 0.5f), // bottomleft vert
-            // back face
-            new Vector3(0.5f, 0.5f, -0.5f), // topleft vert
-            new Vector3(-0.5f, 0.5f, -0.5f), // topright vert
-            new Vector3(-0.5f, -0.5f, -0.5f), // bottomright vert
-            new Vector3(0.5f, -0.5f, -0.5f), // bottomleft vert
-            // left face
-            new Vector3(-0.5f, 0.5f, -0.5f), // topleft vert
-            new Vector3(-0.5f, 0.5f, 0.5f), // topright vert
-            new Vector3(-0.5f, -0.5f, 0.5f), // bottomright vert
-            new Vector3(-0.5f, -0.5f, -0.5f), // bottomleft vert
-            // top face
-            new Vector3(-0.5f, 0.5f, -0.5f), // topleft vert
-            new Vector3(0.5f, 0.5f, -0.5f), // topright vert
-            new Vector3(0.5f, 0.5f, 0.5f), // bottomright vert
-            new Vector3(-0.5f, 0.5f, 0.5f), // bottomleft vert
-            // bottom face
-            new Vector3(-0.5f, -0.5f, 0.5f), // topleft vert
-            new Vector3(0.5f, -0.5f, 0.5f), // topright vert
-            new Vector3(0.5f, -0.5f, -0.5f), // bottomright vert
-            new Vector3(-0.5f, -0.5f, -0.5f), // bottomleft vert
+            // Front face (mapped to texture coordinates (0,0) to (1/128, 1/128))
+            new Vertex(new Vector3(-0.5f, 0.5f, 0.5f), new Vector2(0f, 1f)),
+            new Vertex(new Vector3(0.5f, 0.5f, 0.5f), new Vector2(1f, 1f)),
+            new Vertex(new Vector3(0.5f, -0.5f, 0.5f), new Vector2(1f, 0f)),
+            new Vertex(new Vector3(-0.5f, -0.5f, 0.5f), new Vector2(0f, 0f)),
+
+            // Right face (mapped to texture coordinates (1/128, 0) to (2/128, 1/128))
+            new Vertex(new Vector3(0.5f, 0.5f, 0.5f), new Vector2(1f, 1f)),
+            new Vertex(new Vector3(0.5f, 0.5f, -0.5f), new Vector2(2f, 1f)),
+            new Vertex(new Vector3(0.5f, -0.5f, -0.5f), new Vector2(2f, 0f)),
+            new Vertex(new Vector3(0.5f, -0.5f, 0.5f), new Vector2(1f, 0f)),
+
+            // Back face (mapped to texture coordinates (2/128, 0) to (3/128, 1/128))
+            new Vertex(new Vector3(0.5f, 0.5f, -0.5f), new Vector2(2f, 1f)),
+            new Vertex(new Vector3(-0.5f, 0.5f, -0.5f), new Vector2(3f, 1f)),
+            new Vertex(new Vector3(-0.5f, -0.5f, -0.5f), new Vector2(3f, 0f)),
+            new Vertex(new Vector3(0.5f, -0.5f, -0.5f), new Vector2(2f, 0f)),
+
+            // Left face (mapped to texture coordinates (3/128, 0) to (4/128, 1/128))
+            new Vertex(new Vector3(-0.5f, 0.5f, -0.5f), new Vector2(3f, 1f)),
+            new Vertex(new Vector3(-0.5f, 0.5f, 0.5f), new Vector2(4f, 1f)),
+            new Vertex(new Vector3(-0.5f, -0.5f, 0.5f), new Vector2(4f, 0f)),
+            new Vertex(new Vector3(-0.5f, -0.5f, -0.5f), new Vector2(3f, 0f)),
+
+            // Top face (mapped to texture coordinates (4/128, 0) to (5/128, 1/128))
+            new Vertex(new Vector3(-0.5f, 0.5f, -0.5f), new Vector2(4f, 1f)),
+            new Vertex(new Vector3(0.5f, 0.5f, -0.5f), new Vector2(5f, 1f)),
+            new Vertex(new Vector3(0.5f, 0.5f, 0.5f), new Vector2(5f, 0f)),
+            new Vertex(new Vector3(-0.5f, 0.5f, 0.5f), new Vector2(4f, 0f)),
+
+            // Bottom face (mapped to texture coordinates (5/128, 0) to (6/128, 1/128))
+            new Vertex(new Vector3(-0.5f, -0.5f, 0.5f), new Vector2(5f, 1f)),
+            new Vertex(new Vector3(0.5f, -0.5f, 0.5f), new Vector2(6f, 1f)),
+            new Vertex(new Vector3(0.5f, -0.5f, -0.5f), new Vector2(6f, 0f)),
+            new Vertex(new Vector3(-0.5f, -0.5f, -0.5f), new Vector2(5f, 0f))
         };
 
         uint[] cubeIndices =
@@ -115,50 +121,8 @@ internal class Program
             22, 23, 20
         };
 
-        Vector2[] texCoords = new Vector2[] {
-            new Vector2(0f, 1f),
-            new Vector2(1f, 1f),
-            new Vector2(1f, 0f),
-            new Vector2(0f, 0f),
 
-            new Vector2(0f, 1f),
-            new Vector2(1f, 1f),
-            new Vector2(1f, 0f),
-            new Vector2(0f, 0f),
-
-            new Vector2(0f, 1f),
-            new Vector2(1f, 1f),
-            new Vector2(1f, 0f),
-            new Vector2(0f, 0f),
-
-            new Vector2(0f, 1f),
-            new Vector2(1f, 1f),
-            new Vector2(1f, 0f),
-            new Vector2(0f, 0f),
-
-            new Vector2(0f, 1f),
-            new Vector2(1f, 1f),
-            new Vector2(1f, 0f),
-            new Vector2(0f, 0f),
-
-            new Vector2(0f, 1f),
-            new Vector2(1f, 1f),
-            new Vector2(1f, 0f),
-            new Vector2(0f, 0f),
-        };
-
-        Vertex[] vertices = new Vertex[cubeVerts.Length];
-
-        for(int i = 0; i < vertices.Length; i++)
-        {
-            vertices[i] = new Vertex()
-            {
-                Position = cubeVerts[i],
-                TexCoord = texCoords[i]
-            };
-        }
-
-        storage.StoreResource(new ShapeCreatorService("Shapes/cube.shape", "cube", vertices, cubeIndices));
+        storage.StoreResource(new ShapeCreatorService("Shapes/cube.shape", "cube", vertices.ToArray(), cubeIndices));
     }
 
     public static Vector2[] GenerateUVs(int row, int col)

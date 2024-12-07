@@ -31,9 +31,6 @@ namespace Resources.Components
                     CellWidth = stream.Read<int>();
                     CellHeight = stream.Read<int>();
                     TotalCells = Rows * Columns;
-
-                    if (CellWidth != CellHeight)
-                        throw new NotSupportedException("Atlas sheets can only be squares");
                 }
 
                 int length = stream.Read<int>();
