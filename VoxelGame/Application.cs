@@ -84,7 +84,7 @@ namespace VoxelGame
             Storage.Load();
 
             //Shader shader;
-            using (Resource<Shader> resource = Storage.GetResource<Shader>("Shaders/test.shaders"))
+            using (Resource<Shader> resource = Storage.GetResource<Shader>("Shaders/blockShader.shaders"))
                 shader = resource.GetComponent();
 
             using(Resource<Bitmap> Resource = Storage.GetResource<Bitmap>("Textures/BlockAtlas.bitmap"))

@@ -36,8 +36,8 @@ internal class Program
     }
     public static  void AddShaderToStorage(Storage storage)
     {
-        string vertexShader = File.ReadAllText("test.vert");
-        string fragmentShader = File.ReadAllText("test.frag");
+        string vertexShader = File.ReadAllText("blockShader.vert");
+        string fragmentShader = File.ReadAllText("blockShader.frag");
 
         ShaderCreatorData[] data = new ShaderCreatorData[2];
 
@@ -54,7 +54,7 @@ internal class Program
         };
 
 
-        storage.StoreResource(new ShaderCreatorService("Shaders/test.shaders", data));
+        storage.StoreResource(new ShaderCreatorService("Shaders/blockShader.shaders", data));
     }
     public static void AddCubeToStorage(Storage storage)
     {

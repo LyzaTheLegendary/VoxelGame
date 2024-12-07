@@ -26,6 +26,7 @@ namespace Graphics
         }
         public void RenderSingleVoxel(VoxelType type, Vector3 position, Shape shape, Shader shader, TextureAtlas2D texture, Matrix4 viewMatrix)
         {
+            const int cubeFaceCount = 6;
             // start using quaternions for the camera! to prevent gambol locks
             device.Bind(shader);
             device.Bind(shape.BufferStructure);
@@ -35,7 +36,9 @@ namespace Graphics
 
             shader.SetUniform(Matrix4.CreateTranslation(position) * viewMatrix * Projection, "u_transformations");
             shader.SetUniform(texture.Columns, "u_columns");
-            shader.SetUniform((int)type, "u_index");
+
+            //For the texture atlas, It needs a offset of 5 between each index, So the other slots are filled with the other faces.
+            shader.SetUniform(((int)type * cubeFaceCount), "u_index");
             
             GL.DrawElements(PrimitiveType.Triangles, shape.ElementArray.GetCount(), DrawElementsType.UnsignedInt, IntPtr.Zero);
         }
@@ -45,15 +48,15 @@ namespace Graphics
             shader.SetUniform(viewMatrix * Projection, "u_vp");
             shader.SetUniform(batch.Position, "u_batchPos");
 
-            GpuShaderStorageBuffer<Voxel> buffer = batch.GetGpuBuffer();
-            batch.PrepareRenderIfNeeded();
+            //GpuShaderStorageBuffer<Voxel> buffer = batch.GetGpuBuffer();
+            //batch.PrepareRenderIfNeeded();
 
             device.Bind(shader);
             device.Bind(shape.VertexArray);
             device.Bind(shape.ElementArray);
-            device.Bind(buffer);
+            //device.Bind(buffer);
 
-            GL.DrawElementsInstanced(PrimitiveType.Triangles, buffer.Count(), DrawElementsType.UnsignedInt, IntPtr.Zero, buffer.Count());
+            //GL.DrawElementsInstanced(PrimitiveType.Triangles, buffer.Count(), DrawElementsType.UnsignedInt, IntPtr.Zero, buffer.Count());
         }
     }
 }
