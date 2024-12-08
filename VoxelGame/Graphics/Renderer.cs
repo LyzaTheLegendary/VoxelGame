@@ -1,4 +1,5 @@
-﻿using Graphics.GpuComputing;
+﻿using Content.Universe;
+using Graphics.GpuComputing;
 using Graphics.GpuMemory;
 using Graphics.GpuTextures;
 using OpenTK.Graphics.OpenGL4;
@@ -35,28 +36,28 @@ namespace Graphics
             device.Bind(texture);
 
             shader.SetUniform(Matrix4.CreateTranslation(position) * viewMatrix * Projection, "u_transformations");
+
+            //Turn both uniforms into a long using bitwise operators
             shader.SetUniform(texture.Columns, "u_columns");
 
             //For the texture atlas, It needs a offset of 5 between each index, So the other slots are filled with the other faces.
-            shader.SetUniform(((int)type * cubeFaceCount), "u_index");
+            shader.SetUniform((int)type * cubeFaceCount, "u_index");
             
             GL.DrawElements(PrimitiveType.Triangles, shape.ElementArray.GetCount(), DrawElementsType.UnsignedInt, IntPtr.Zero);
         }
 
-        public void RenderBatch(VoxelBatch batch, Shader shader, Shape shape, Matrix4 viewMatrix)
-        {
-            shader.SetUniform(viewMatrix * Projection, "u_vp");
-            shader.SetUniform(batch.Position, "u_batchPos");
-
-            //GpuShaderStorageBuffer<Voxel> buffer = batch.GetGpuBuffer();
-            //batch.PrepareRenderIfNeeded();
+        public void RenderChunk(Chunk chunk, Shader shader, Shape shape, Matrix4 viewMatrix)
+        {            
+            shader.SetUniform(Matrix4.CreateTranslation(chunk.Position) * viewMatrix * Projection, "u_transformations");
 
             device.Bind(shader);
             device.Bind(shape.VertexArray);
             device.Bind(shape.ElementArray);
-            //device.Bind(buffer);
+            device.Bind(chunk.Buffer);
 
-            //GL.DrawElementsInstanced(PrimitiveType.Triangles, buffer.Count(), DrawElementsType.UnsignedInt, IntPtr.Zero, buffer.Count());
+            chunk.UpdateIfDirty();
+
+            GL.DrawElementsInstanced(PrimitiveType.Triangles, chunk.Buffer.Count(), DrawElementsType.UnsignedInt, IntPtr.Zero, chunk.Buffer.Count());
         }
     }
 }

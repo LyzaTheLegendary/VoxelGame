@@ -7,7 +7,7 @@ namespace Voxels
     public class VoxelBatch
     {
         private static ArrayPool<VoxelType> VoxelPool { get; } = ArrayPool<VoxelType>.Shared;
-        const int BATCH_SIZE = 0;
+        public const int BATCH_SIZE = 16;
         public Vector3i Position { get; init; }
         public VoxelType[] Voxels { get; private set; }
 

@@ -28,7 +28,7 @@ namespace Graphics
         public int TEX2D { get; set; }
     }
 
-    public class GraphicsDevice
+    public class GraphicsDevice // turn into static class and make sure that it knows when openGL context is intialized.
     {
         private const int GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX = 0x9049;
         private const int GL_TEXTURE_FREE_MEMORY_ATI = 0x87FC;

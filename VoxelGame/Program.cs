@@ -8,15 +8,14 @@ using VoxelGame;
 
 internal class Program
 {
-    static public void Main() // requirement check if openGL is version 4.5 atleast
+    static public void Main()
     {
         /*
          TODOS:
             1. Tokenize the GSLS language.
             2. A shader should know certain things like what SSBO it's bound to.
             3. The variables it has.
-            4. Make sure that the VAO is the same structure as the variables
-            5. Look into rastorization shaders
+            4. Look into rastorization shaders
          */
         
 
@@ -123,22 +122,5 @@ internal class Program
 
 
         storage.StoreResource(new ShapeCreatorService("Shapes/cube.shape", "cube", vertices.ToArray(), cubeIndices));
-    }
-
-    public static Vector2[] GenerateUVs(int row, int col)
-    {
-        float cellSize = 1.0f / 16.0f; // Adjust for your grid size
-        float xMin = col * cellSize;
-        float xMax = xMin + cellSize;
-        float yMin = row * cellSize;
-        float yMax = yMin + cellSize;
-
-        return new Vector2[]
-        {
-        new Vector2(xMin, yMax), // Top-left
-        new Vector2(xMax, yMax), // Top-right
-        new Vector2(xMax, yMin), // Bottom-right
-        new Vector2(xMin, yMin), // Bottom-left
-        };
     }
 }

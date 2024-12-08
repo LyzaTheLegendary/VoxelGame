@@ -14,6 +14,7 @@ using Voxels;
 using Resources.Components;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using ImGuiNET;
+using Content.Universe;
 
 
 namespace VoxelGame
@@ -31,6 +32,7 @@ namespace VoxelGame
         private Shader shader; // temp value
         private TextureAtlas2D texture; // temp val
         private Vector3 tempPos = new Vector3(0, 0, 0);// temp val
+        private World world = new World("world", WorldType.EARTH);
 
         public Application() : base(GameWindowSettings.Default, new NativeWindowSettings
         {
@@ -116,9 +118,9 @@ namespace VoxelGame
         {
 
             Renderer.Clear();
-            Renderer.RenderSingleVoxel(VoxelType.DIRT, tempPos, GameContent.GetShape("cube"), shader, texture, Camera.GetViewMatrix());
+            //Renderer.RenderSingleVoxel(VoxelType.DIRT, tempPos, GameContent.GetShape("cube"), shader, texture, Camera.GetViewMatrix());
+            Renderer.RenderChunk(world.GetChunk(0,0,0), shader, GameContent.GetShape("cube"), Camera.GetViewMatrix());
 
-            
             Context.SwapBuffers();
             base.OnRenderFrame(args);
         }
