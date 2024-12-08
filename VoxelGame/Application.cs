@@ -25,7 +25,6 @@ namespace VoxelGame
 
         public readonly MonitorStruct m_monitorInfo = new MonitorStruct();
         public Camera3D Camera { get; private set; }
-        public GraphicsDevice GraphicsDevice { get; set; }
         public Renderer Renderer { get; set; }
         public Storage Storage { get; set; }
 
@@ -71,8 +70,7 @@ namespace VoxelGame
             base.OnLoad();
             CursorState = CursorState.Grabbed;
 
-            GraphicsDevice = new GraphicsDevice();
-            Renderer = new Renderer(GraphicsDevice, Camera.GetProjectionMatrix());
+            Renderer = new Renderer(Camera.GetProjectionMatrix());
             GL.Enable(EnableCap.DepthTest);
             GL.DepthFunc(DepthFunction.Less);
 #if DEBUG
@@ -118,8 +116,8 @@ namespace VoxelGame
         {
 
             Renderer.Clear();
-            //Renderer.RenderSingleVoxel(VoxelType.DIRT, tempPos, GameContent.GetShape("cube"), shader, texture, Camera.GetViewMatrix());
-            Renderer.RenderChunk(world.GetChunk(0,0,0), shader, GameContent.GetShape("cube"), Camera.GetViewMatrix());
+            Renderer.RenderSingleVoxel(VoxelType.DIRT, tempPos, GameContent.GetShape("cube"), shader, texture, Camera.GetViewMatrix());
+            //Renderer.RenderChunk(world.GetChunk(0,0,0), shader, GameContent.GetShape("cube"), Camera.GetViewMatrix());
 
             Context.SwapBuffers();
             base.OnRenderFrame(args);

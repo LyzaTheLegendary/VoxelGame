@@ -10,13 +10,11 @@ namespace Graphics
 {
     public class Renderer
     {
-        private readonly GraphicsDevice device;
         public Matrix4 Projection { get; set; }
         public Color4 Background { get; set; }
 
-        public Renderer(GraphicsDevice device, Matrix4 projection)
+        public Renderer(Matrix4 projection)
         {
-            this.device = device;
             Projection = projection;
             Background = Color4.Black;
         }
@@ -29,11 +27,11 @@ namespace Graphics
         {
             const int cubeFaceCount = 6;
             // start using quaternions for the camera! to prevent gambol locks
-            device.Bind(shader);
-            device.Bind(shape.BufferStructure);
-            device.Bind(shape.ElementArray);
-            device.Bind(shape.VertexArray);
-            device.Bind(texture);
+            GraphicsDevice.Bind(shader);
+            GraphicsDevice.Bind(shape.BufferStructure);
+            GraphicsDevice.Bind(shape.ElementArray);
+            GraphicsDevice.Bind(shape.VertexArray);
+            GraphicsDevice.Bind(texture);
 
             shader.SetUniform(Matrix4.CreateTranslation(position) * viewMatrix * Projection, "u_transformations");
 
@@ -50,10 +48,10 @@ namespace Graphics
         {            
             shader.SetUniform(Matrix4.CreateTranslation(chunk.Position) * viewMatrix * Projection, "u_transformations");
 
-            device.Bind(shader);
-            device.Bind(shape.VertexArray);
-            device.Bind(shape.ElementArray);
-            device.Bind(chunk.Buffer);
+            GraphicsDevice.Bind(shader);
+            GraphicsDevice.Bind(shape.VertexArray);
+            GraphicsDevice.Bind(shape.ElementArray);
+            GraphicsDevice.Bind(chunk.Buffer);
 
             chunk.UpdateIfDirty();
 

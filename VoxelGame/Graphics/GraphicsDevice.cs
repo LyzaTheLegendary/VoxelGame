@@ -28,15 +28,15 @@ namespace Graphics
         public int TEX2D { get; set; }
     }
 
-    public class GraphicsDevice // turn into static class and make sure that it knows when openGL context is intialized.
+    public static class GraphicsDevice // turn into static class and make sure that it knows when openGL context is intialized.
     {
         private const int GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX = 0x9049;
         private const int GL_TEXTURE_FREE_MEMORY_ATI = 0x87FC;
 
-        private GpuType type;
-        private GpuState currentState = new();
-        private GpuInfo gpuInfo;
-        public GraphicsDevice() {
+        private static GpuType type;
+        private static GpuState currentState = new();
+        private static GpuInfo gpuInfo;
+        public static void Init() {
             string renderer = GL.GetString(StringName.Renderer) ?? "Unknown Renderer";
 
             if (renderer.Contains("NVIDIA", StringComparison.OrdinalIgnoreCase))
@@ -66,7 +66,7 @@ namespace Graphics
             };
 
         }
-        public long AvailableMemory() // butt fuck broken, have to fix.
+        public static long AvailableMemory() // butt fuck broken, have to fix.
         {
             return type switch
             {
@@ -75,7 +75,7 @@ namespace Graphics
                 _ => throw new NotSupportedException("Memory querying is not supported on this GPU.")
             };
         }
-        public GpuArrayBuffer<T> AllocateArray<T>(IEnumerable<T>? data, BufferUsageHint hint, BufferTarget bufferTarget) where T : struct
+        public static GpuArrayBuffer<T> AllocateArray<T>(IEnumerable<T>? data, BufferUsageHint hint, BufferTarget bufferTarget) where T : struct
         {
             GL.CreateBuffers(1, out int pointer);
 
@@ -89,18 +89,18 @@ namespace Graphics
 
             return buffer;
         }
-        public GpuShaderStorageBuffer<T> AllocateShaderBuffer<T>(int count, BufferUsageHint hint, int bindingPoint) where T : struct
+        public static GpuShaderStorageBuffer<T> AllocateShaderBuffer<T>(int count, BufferUsageHint hint, int bindingPoint) where T : struct
         {
             if (count * Marshal.SizeOf<T>() > gpuInfo.MaxSSBOSize || bindingPoint > gpuInfo.MaxBindingPoints)
                 throw new NotSupportedException("Unsupported SSBO interaction");
 
             return new GpuShaderStorageBuffer<T>(GL.GenBuffer(), count, hint, bindingPoint);
         }
-        public GpuBufferStructure AllocateArrayStructure()
+        public static GpuBufferStructure AllocateArrayStructure()
         {
             return new GpuBufferStructure(GL.GenVertexArray());
         }
-        public Texture2D AllocateTexture(Bitmap? bitmap, TextureUnit unit)
+        public static Texture2D AllocateTexture(Bitmap? bitmap, TextureUnit unit)
         {
             GL.GenTextures(1, out int pointer);
 
@@ -114,7 +114,7 @@ namespace Graphics
 
             return texture;
         }
-        public TextureAtlas2D AllocateTextureAtlas(Bitmap? bitmap, TextureUnit unit)
+        public static TextureAtlas2D AllocateTextureAtlas(Bitmap? bitmap, TextureUnit unit)
         {
             GL.GenTextures(1, out int pointer);
 
@@ -128,7 +128,7 @@ namespace Graphics
 
             return textureAtlas;
         }
-        public void Bind<T>(GpuArrayBuffer<T> buffer) where T : struct
+        public static void Bind<T>(GpuArrayBuffer<T> buffer) where T : struct
         {
             int pointer = buffer.GetPointer();
             BufferTarget target = buffer.GetTarget();
@@ -152,7 +152,7 @@ namespace Graphics
 
             buffer.Bind();
         }
-        public void Bind(GpuBufferStructure buffer)
+        public static void Bind(GpuBufferStructure buffer)
         {
             int pointer = buffer.GetPointer();
 
@@ -162,7 +162,7 @@ namespace Graphics
             currentState.VAO = pointer;
             buffer.Bind();
         }
-        public void Bind(Shader shader)
+        public static void Bind(Shader shader)
         {
             int pointer = shader.GetPointer();
 
@@ -172,11 +172,11 @@ namespace Graphics
             currentState.Program = pointer;
             shader.Bind();
         }
-        public void Bind<T>(GpuShaderStorageBuffer<T> buffer) where T : struct // we're not caching which buffers we have now.
+        public static void Bind<T>(GpuShaderStorageBuffer<T> buffer) where T : struct // we're not caching which buffers we have now.
         {
             GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, buffer.GetBindingPoint(), buffer.GetPointer());
         }
-        public void Bind(Texture2D texture)
+        public static void Bind(Texture2D texture)
         {
             if(currentState.TEX2D == texture.GetPointer())
                 return;
@@ -184,7 +184,7 @@ namespace Graphics
             currentState.TEX2D = texture.GetPointer();
             texture.Bind();
         }
-        public void Bind(TextureAtlas2D texture)
+        public static void Bind(TextureAtlas2D texture)
         {
             if (currentState.TEX2D == texture.GetPointer())
                 return;
@@ -193,12 +193,12 @@ namespace Graphics
             texture.Bind();
         }
 
-        private long QueryAvailableMemory(int queryCode)
+        private static long QueryAvailableMemory(int queryCode)
         {
             GL.GetInteger((GetPName)queryCode, out int availableMemoryKb);
             return (long)availableMemoryKb * 1024;
         }
-        private int QueryValue(GetPName code)
+        private static int QueryValue(GetPName code)
         {
             GL.GetInteger(code, out var value);
 

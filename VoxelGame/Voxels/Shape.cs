@@ -19,7 +19,6 @@ namespace Voxels
 
         public void CreateResourceFromData(IEnumerable<byte> data)
         {
-            GraphicsDevice device = Application.Instance.GraphicsDevice;
             using (MemoryStream stream = new MemoryStream(data as byte[] ?? data.ToArray()))
             {
                 Name = stream.ReadString();
@@ -35,10 +34,10 @@ namespace Voxels
                 for (int i = 0; i < indices; i++)
                     indiceArray[i] = stream.Read<uint>();
 
-                VertexArray = device.AllocateArray<Vertex>(vertexArray, BufferUsageHint.StaticRead, BufferTarget.ArrayBuffer);
-                ElementArray = device.AllocateArray<uint>(indiceArray, BufferUsageHint.StaticRead, BufferTarget.ElementArrayBuffer);
+                VertexArray = GraphicsDevice.AllocateArray<Vertex>(vertexArray, BufferUsageHint.StaticRead, BufferTarget.ArrayBuffer);
+                ElementArray = GraphicsDevice.AllocateArray<uint>(indiceArray, BufferUsageHint.StaticRead, BufferTarget.ElementArrayBuffer);
 
-                BufferStructure = device.AllocateArrayStructure();
+                BufferStructure = GraphicsDevice.AllocateArrayStructure();
                 BufferStructure.SetVertexArray(VertexArray);
 
                 BufferStructure.AddAttribute(3, VertexAttribType.Float, false, 0);

@@ -16,14 +16,13 @@ namespace UnitTests
         Storage storage;
         public OpenGLContext(Storage storage) : base(GameWindowSettings.Default, NativeWindowSettings.Default)
         {
+            IsVisible = false;
             this.storage = storage;
         }
 
         protected override void OnLoad()
         {
             Close();
-            Application.Instance = new Application();
-            Application.Instance.GraphicsDevice = new GraphicsDevice();
             Shader shader;
             using (Resource<Shader> resource = storage.GetResource<Shader>("Shaders/test.shaders"))
                 shader = resource.GetComponent();
@@ -36,7 +35,7 @@ namespace UnitTests
             using (Resource<Bitmap> Resource = storage.GetResource<Bitmap>("Textures/BlockAtlas.bitmap"))
                 bitmap = Resource.GetComponent();
 
-            TextureAtlas2D texture = Application.Instance.GraphicsDevice.AllocateTextureAtlas(bitmap, TextureUnit.Texture0);
+            TextureAtlas2D texture = GraphicsDevice.AllocateTextureAtlas(bitmap, TextureUnit.Texture0);
 
             shader.Dispose();
             shape.Dispose();
