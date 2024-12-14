@@ -15,7 +15,7 @@ namespace Content.Universe
         public GpuArrayBuffer<uint> IndexBuffer { get; init; }
         public GpuBufferStructure BufferStructure { get; init; }
     }
-    public class Chunk : VoxelBatch, IDisposable // TODO: implement greedy meshing
+    public class Chunk : VoxelBatch, IDisposable
     {
         
         public ChunkMesh Mesh { get; init; }
@@ -24,7 +24,6 @@ namespace Content.Universe
         {
             Mesh = new ChunkMesh()
             {
-                //Buffer = GraphicsDevice.AllocateShaderBuffer<ushort>(Voxels.Length, BufferUsageHint.StaticDraw, 0),
                 VertexBuffer = GraphicsDevice.AllocateArray<Vertex>(null, BufferUsageHint.StaticDraw, BufferTarget.ArrayBuffer),
                 IndexBuffer = GraphicsDevice.AllocateArray<uint>(null, BufferUsageHint.StaticDraw, BufferTarget.ElementArrayBuffer),
                 BufferStructure = GraphicsDevice.AllocateArrayStructure()
@@ -43,7 +42,6 @@ namespace Content.Universe
             if (isDirty)
             {
                 BuildGreedyMesh();
-                //Mesh.Buffer.Upload(0, Voxels, Voxels.Length);
                 isDirty = false;
             }
         }

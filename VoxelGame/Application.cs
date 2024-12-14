@@ -72,6 +72,8 @@ namespace VoxelGame
             GL.DepthFunc(DepthFunction.Less);
             GL.Enable(EnableCap.CullFace);
             GL.CullFace(CullFaceMode.Back);
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 #if DEBUG
             GL.DebugMessageCallback(OnDebugMessage, IntPtr.Zero);
             GL.Enable(EnableCap.DebugOutput);

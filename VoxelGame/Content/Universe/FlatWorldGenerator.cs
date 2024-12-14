@@ -15,7 +15,7 @@ namespace Content.Universe
 
             for(int x = 0; x < Chunk.BATCH_SIZE; x++)
                 for(int z = 0; z < Chunk.BATCH_SIZE; z++)
-                    chunk.SetVoxel(x, 0, z, VoxelType.GRASS);
+                    chunk.SetVoxel(x, 0, z, VoxelType.DIRT);
         }
     }
 }
