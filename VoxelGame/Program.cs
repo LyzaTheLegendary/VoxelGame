@@ -54,6 +54,25 @@ internal class Program
 
 
         storage.StoreResource(new ShaderCreatorService("Shaders/blockShader.shaders", data));
+
+        string chunkVertexShader = File.ReadAllText("chunkShader.vert");
+        string chunkFragmentShader = File.ReadAllText("chunkShader.frag");
+
+        ShaderCreatorData[] data2 = new ShaderCreatorData[2];
+
+        data2[0] = new ShaderCreatorData()
+        {
+            ShaderCode = chunkVertexShader,
+            Type = OpenTK.Graphics.OpenGL4.ShaderType.VertexShader
+        };
+
+        data2[1] = new ShaderCreatorData()
+        {
+            ShaderCode = chunkFragmentShader,
+            Type = OpenTK.Graphics.OpenGL4.ShaderType.FragmentShader
+        };
+
+        storage.StoreResource(new ShaderCreatorService("Shaders/chunkShader.shaders", data2));
     }
     public static void AddCubeToStorage(Storage storage)
     {

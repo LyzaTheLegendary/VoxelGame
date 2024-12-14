@@ -34,14 +34,16 @@ namespace Graphics.GpuMemory
         public int GetPointer() => pointer;
         public int GetBindingPoint() => bindingPoint;
         public int Count() => elementCount;
-        public void Upload(int elementOffset, [NotNull] T[] data)
+        public void Upload(int elementOffset, [NotNull] T[] data, int elementCount)
         {
             if (data == null) throw new ArgumentNullException(nameof(data));
 
             if (data.Length + elementOffset > elementCount)
                 throw new ArgumentOutOfRangeException(nameof(data), " exceeds the buffer capacity.");
 
-            GL.NamedBufferSubData<T>(pointer, (elementOffset + data.Length) * Marshal.SizeOf<T>(), data.Length * Marshal.SizeOf<T>(), data);
+
+            GL.NamedBufferSubData<T>(pointer, elementOffset * Marshal.SizeOf<T>(), elementCount * Marshal.SizeOf<T>(), data);
+            //GL.NamedBufferSubData<T>(pointer, (elementOffset + data.Length) * Marshal.SizeOf<T>(), data.Length * Marshal.SizeOf<T>(), data);
         }
         public void Bind() => GL.BindBuffer(BufferTarget.ShaderStorageBuffer, pointer);
 

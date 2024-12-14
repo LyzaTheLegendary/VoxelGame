@@ -21,14 +21,12 @@ namespace VoxelGame
 {
     public class Application : GameWindow
     {
-        public static Application Instance { get; set; }
-
         public readonly MonitorStruct m_monitorInfo = new MonitorStruct();
-        public Camera3D Camera { get; private set; }
         public Renderer Renderer { get; set; }
         public Storage Storage { get; set; }
 
         private Shader shader; // temp value
+        private Shader chunkShader;
         private TextureAtlas2D texture; // temp val
         private Vector3 tempPos = new Vector3(0, 0, 0);// temp val
         private World world = new World("world", WorldType.EARTH);
@@ -43,10 +41,8 @@ namespace VoxelGame
 #endif
         })
         {
-            Camera = new Camera3D(45f, 1920f, 1080f);
             Storage = new Storage();
             Title = "VoxelGame demo";
-            Instance = this;
         }
         private static void OnDebugMessage(
             DebugSource source,     // Source of the debugging message.
@@ -68,11 +64,14 @@ namespace VoxelGame
         protected override void OnLoad()
         {
             base.OnLoad();
+            GraphicsDevice.Init();
             CursorState = CursorState.Grabbed;
+            Renderer = new Renderer(new Camera3D(45f, 1920f, 1080f));
 
-            Renderer = new Renderer(Camera.GetProjectionMatrix());
             GL.Enable(EnableCap.DepthTest);
             GL.DepthFunc(DepthFunction.Less);
+            GL.Enable(EnableCap.CullFace);
+            GL.CullFace(CullFaceMode.Back);
 #if DEBUG
             GL.DebugMessageCallback(OnDebugMessage, IntPtr.Zero);
             GL.Enable(EnableCap.DebugOutput);
@@ -87,6 +86,9 @@ namespace VoxelGame
             using (Resource<Shader> resource = Storage.GetResource<Shader>("Shaders/blockShader.shaders"))
                 shader = resource.GetComponent();
 
+            using (Resource<Shader> resource = Storage.GetResource<Shader>("Shaders/chunkShader.shaders"))
+                chunkShader = resource.GetComponent();
+
             using(Resource<Bitmap> Resource = Storage.GetResource<Bitmap>("Textures/BlockAtlas.bitmap"))
                 texture = GraphicsDevice.AllocateTextureAtlas(Resource.GetComponent(), TextureUnit.Texture0);
         }
@@ -99,8 +101,7 @@ namespace VoxelGame
         {
             base.OnResize(e);
             GL.Viewport(0,0, e.Width, e.Height);
-            Camera.UpdateFov(e.Width, e.Height);
-            Renderer.Projection = Camera.GetProjectionMatrix();
+            Renderer.UpdateFov(e.Width, e.Height);
         }
 
         protected override void OnUpdateFrame(FrameEventArgs args)
@@ -108,7 +109,7 @@ namespace VoxelGame
             if (KeyboardState.IsKeyDown(Keys.Escape))
                 Environment.Exit(0);
 
-            Camera.InputController(this.KeyboardState, this.MouseState, (float)args.Time);
+            Renderer.Camera.InputController(KeyboardState, MouseState, (float)args.Time);
             base.OnUpdateFrame(args);
         }
 
@@ -116,8 +117,9 @@ namespace VoxelGame
         {
 
             Renderer.Clear();
-            Renderer.RenderSingleVoxel(VoxelType.DIRT, tempPos, GameContent.GetShape("cube"), shader, texture, Camera.GetViewMatrix());
-            //Renderer.RenderChunk(world.GetChunk(0,0,0), shader, GameContent.GetShape("cube"), Camera.GetViewMatrix());
+            //Renderer.RenderSingleVoxel(VoxelType.DIRT, tempPos, GameContent.GetShape("cube"), shader, texture);
+
+            Renderer.RenderChunk(world.GetChunk(0,0,0), chunkShader, texture);
 
             Context.SwapBuffers();
             base.OnRenderFrame(args);

@@ -4,42 +4,55 @@ using System.Buffers;
 
 namespace Voxels
 {
-    public class VoxelBatch
+    public class VoxelBatch // implement Idisposable?
     {
-        private static ArrayPool<VoxelType> VoxelPool { get; } = ArrayPool<VoxelType>.Shared;
+        private static ArrayPool<ushort> VoxelPool { get; } = ArrayPool<ushort>.Shared;
         public const int BATCH_SIZE = 16;
+        public const int TOTAL_SIZE = BATCH_SIZE * BATCH_SIZE * BATCH_SIZE;
         public Vector3i Position { get; init; }
-        public VoxelType[] Voxels { get; private set; }
+        public ushort[] Voxels { get; private set; }
 
         public VoxelBatch(int x, int y, int z)
         {
             Position = new Vector3i(x, y, z);
-            Voxels = VoxelPool.Rent(BATCH_SIZE * BATCH_SIZE * BATCH_SIZE);
+            Voxels = VoxelPool.Rent(TOTAL_SIZE + 1);
+
+            for(int i = 0; i < TOTAL_SIZE; i++)
+                Voxels[i] = (ushort)VoxelType.AIR;
         }
 
-        public VoxelType GetVoxel(int x, int y, int z)
+        public virtual VoxelType GetVoxel(Vector3i pos) => GetVoxel(pos.X, pos.Y, pos.Z);
+        public virtual VoxelType GetVoxel(int x, int y, int z)
+        {
+            int index = GetIndex(x, y, z);
+
+            if (index > TOTAL_SIZE || index < 0) return VoxelType.AIR;
+            //throw new ArgumentOutOfRangeException("Voxel coordinates are out of bounds.");
+
+
+            return (VoxelType)Voxels[index];
+        }
+        public virtual VoxelType GetVoxel(int index)
+        {
+            if (index >= TOTAL_SIZE)
+                throw new ArgumentOutOfRangeException("Voxel index is out of bounds.");
+
+            return (VoxelType)Voxels[index];
+        }
+        public virtual void SetVoxel(int x, int y, int z, VoxelType type)
         {
             if (x >= BATCH_SIZE || y >= BATCH_SIZE || z >= BATCH_SIZE)
                 throw new ArgumentOutOfRangeException("Voxel coordinates are out of bounds.");
 
             int index = GetIndex(x, y, z);
-            return Voxels[index];
+            Voxels[index] = (ushort)type;
         }
 
-        public void SetVoxel(int x, int y, int z, VoxelType type)
-        {
-            if (x >= BATCH_SIZE || y >= BATCH_SIZE || z >= BATCH_SIZE)
-                throw new ArgumentOutOfRangeException("Voxel coordinates are out of bounds.");
-
-            int index = GetIndex(x, y, z);
-            Voxels[index] = type;
-        }
-
-        private int GetIndex(int x, int y, int z) => x + (y * BATCH_SIZE) + (z * BATCH_SIZE * BATCH_SIZE);
+        protected int GetIndex(int x, int y, int z) => x + (y * BATCH_SIZE) + (z * (BATCH_SIZE * BATCH_SIZE));
         
         ~VoxelBatch()
         {
-            VoxelPool.Return(Voxels, true);
+            //VoxelPool.Return(Voxels, true);
         }
     }
 }

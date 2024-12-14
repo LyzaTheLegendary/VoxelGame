@@ -94,7 +94,24 @@ namespace Graphics
             if (count * Marshal.SizeOf<T>() > gpuInfo.MaxSSBOSize || bindingPoint > gpuInfo.MaxBindingPoints)
                 throw new NotSupportedException("Unsupported SSBO interaction");
 
-            return new GpuShaderStorageBuffer<T>(GL.GenBuffer(), count, hint, bindingPoint);
+            GL.CreateBuffers(1, out int pointer);
+
+            if (pointer == 0 || !GL.IsBuffer(pointer))
+                throw new Exception("Failed to allocate GL buffer of type: SSBO");
+
+            return new GpuShaderStorageBuffer<T>(pointer, count, hint, bindingPoint);
+        }
+        public static GpuShaderStorageBuffer<T> AllocateShaderBuffer<T>(T[] data, BufferUsageHint hint, int bindingPoint) where T : struct
+        {
+            if (data.Length * Marshal.SizeOf<T>() > gpuInfo.MaxSSBOSize || bindingPoint > gpuInfo.MaxBindingPoints)
+                throw new NotSupportedException("Unsupported SSBO interaction");
+
+            GL.CreateBuffers(1, out int pointer);
+
+            if (pointer == 0 || !GL.IsBuffer(pointer))
+                throw new Exception("Failed to allocate GL buffer of type: SSBO");
+
+            return new GpuShaderStorageBuffer<T>(pointer, data, hint, bindingPoint);
         }
         public static GpuBufferStructure AllocateArrayStructure()
         {

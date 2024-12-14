@@ -21,7 +21,7 @@ namespace Graphics.GpuMemory
 
         ~GpuArrayBuffer() => UnBind();
         public int GetPointer() => pointer;
-        public int GetCount() => elements;
+        public int Count() => elements;
         public BufferTarget GetTarget() => bufferTarget;
         public void Bind() => GL.BindBuffer(bufferTarget, pointer);
         public void UnBind() => GL.BindBuffer(bufferTarget, 0);
