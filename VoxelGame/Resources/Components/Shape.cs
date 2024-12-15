@@ -6,7 +6,7 @@ using Utils;
 using VoxelGame;
 using OpenTK.Graphics.OpenGL4;
 using System.Runtime.InteropServices;
-namespace Voxels
+namespace VoxelGame.Resources.Components
 {
     public class Shape() : IComponent, IDisposable
     {
@@ -34,8 +34,8 @@ namespace Voxels
                 for (int i = 0; i < indices; i++)
                     indiceArray[i] = stream.Read<uint>();
 
-                VertexArray = GraphicsDevice.AllocateArray<Vertex>(vertexArray, BufferUsageHint.StaticRead, BufferTarget.ArrayBuffer);
-                ElementArray = GraphicsDevice.AllocateArray<uint>(indiceArray, BufferUsageHint.StaticRead, BufferTarget.ElementArrayBuffer);
+                VertexArray = GraphicsDevice.AllocateArray(vertexArray, BufferUsageHint.StaticRead, BufferTarget.ArrayBuffer);
+                ElementArray = GraphicsDevice.AllocateArray(indiceArray, BufferUsageHint.StaticRead, BufferTarget.ElementArrayBuffer);
 
                 BufferStructure = GraphicsDevice.AllocateArrayStructure();
                 BufferStructure.SetVertexArray(VertexArray);

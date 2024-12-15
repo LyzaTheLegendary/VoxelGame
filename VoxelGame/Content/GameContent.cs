@@ -1,5 +1,5 @@
 ﻿using System.Collections.Concurrent;
-using Voxels;
+using VoxelGame.Resources.Components;
 
 namespace Content
 {

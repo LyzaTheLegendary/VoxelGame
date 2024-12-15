@@ -7,7 +7,7 @@ using OpenTK.Windowing.Desktop;
 using Resources;
 using Resources.Components;
 using VoxelGame;
-using Voxels;
+using VoxelGame.Resources.Components;
 
 namespace UnitTests
 {

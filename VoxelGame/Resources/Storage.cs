@@ -4,8 +4,8 @@ using System.Buffers;
 using System.IO;
 using System.Runtime.InteropServices;
 using Utils;
+using VoxelGame.Resources.Components;
 using VoxelGame.Utils;
-using Voxels;
 
 namespace Resources
 {

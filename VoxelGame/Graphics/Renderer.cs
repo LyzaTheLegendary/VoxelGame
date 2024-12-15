@@ -5,6 +5,7 @@ using Graphics.GpuMemory;
 using Graphics.GpuTextures;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
+using VoxelGame.Resources.Components;
 using Voxels;
 
 namespace Graphics

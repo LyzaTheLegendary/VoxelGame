@@ -35,8 +35,9 @@ namespace Graphics.GpuTextures
 
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, Width, Height, 0, Format, PixelType.UnsignedByte, bitmap.Data);
 
-            GL.TextureParameter(pointer, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
-            GL.TextureParameter(pointer, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
+            GL.TextureParameter(pointer, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
+            GL.TextureParameter(pointer, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
+
             GL.TextureParameter(pointer, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
             GL.TextureParameter(pointer, TextureParameterName.TextureMagFilter, (int)TextureMinFilter.Nearest);
         }
