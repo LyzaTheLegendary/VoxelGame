@@ -3,19 +3,25 @@ using Voxels;
 
 namespace Content.Universe
 {
-    public class FlatWorldGenerator : IWorldGeneratorService
+    public class FlatWorldGenerator : WorldGeneratorService
     {
-        public void Generate(Chunk chunk)
+        public FlatWorldGenerator(int seed) : base(seed)
+        {
+
+        }
+        public override void Generate(Chunk chunk)
         {
             Vector3 position = chunk.Position;
 
-            if (position.Y < 0 || position.Y > 0)
-                return;
-
-
-            for(int x = 0; x < Chunk.BATCH_SIZE; x++)
-                for(int z = 0; z < Chunk.BATCH_SIZE; z++)
-                    chunk.SetVoxel(x, 0, z, VoxelType.DIRT);
+            for (int x = 0; x < Chunk.BATCH_SIZE; x++)
+                for (int z = 0; z < Chunk.BATCH_SIZE; z++)
+                    for(int y = 0; y < Chunk.BATCH_SIZE; y++)
+                    {
+                        VoxelType voxel = GenerateVoxel(x, y, z, chunk);
+                        
+                        chunk.SetVoxel(x, y, z, voxel);
+                    }
+            
         }
     }
 }

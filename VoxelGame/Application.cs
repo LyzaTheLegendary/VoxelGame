@@ -70,6 +70,7 @@ namespace VoxelGame
 
             GL.Enable(EnableCap.DepthTest);
             GL.DepthFunc(DepthFunction.Less);
+            //TODO: fix culling
             //GL.Enable(EnableCap.CullFace);
             //GL.CullFace(CullFaceMode.Front);
             GL.Enable(EnableCap.Blend);
@@ -119,9 +120,18 @@ namespace VoxelGame
         {
 
             Renderer.Clear();
-            //Renderer.RenderSingleVoxel(VoxelType.DIRT, tempPos, GameContent.GetShape("cube"), shader, texture);
 
-            Renderer.RenderChunk(world.GetChunk(0,0,0), chunkShader, texture);
+            //TODO: fix Y axis does not work.
+            Renderer.RenderChunk(world.GetChunk(0, 0, 0), chunkShader, texture);
+
+            Renderer.RenderChunk(world.GetChunk(0, 1, 0), chunkShader, texture);
+            Renderer.RenderChunk(world.GetChunk(0, -1, 0), chunkShader, texture);
+
+            Renderer.RenderChunk(world.GetChunk(1, 0, 0), chunkShader, texture);
+            Renderer.RenderChunk(world.GetChunk(0, 0, 1), chunkShader, texture);
+            Renderer.RenderChunk(world.GetChunk(0, 0, -1), chunkShader, texture);
+            Renderer.RenderChunk(world.GetChunk(-1, 0, 0), chunkShader, texture);
+
 
             Context.SwapBuffers();
             base.OnRenderFrame(args);

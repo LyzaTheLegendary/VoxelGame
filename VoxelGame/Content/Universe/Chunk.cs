@@ -10,14 +10,12 @@ namespace Content.Universe
 {
     public struct ChunkMesh
     {
-        //public GpuShaderStorageBuffer<ushort> Buffer { get; init; }
         public GpuArrayBuffer<Vertex> VertexBuffer { get; init; }
         public GpuArrayBuffer<uint> IndexBuffer { get; init; }
         public GpuBufferStructure BufferStructure { get; init; }
     }
-    public class Chunk : VoxelBatch, IDisposable
+    public class Chunk : VoxelBatch
     {
-        
         public ChunkMesh Mesh { get; init; }
         private bool isDirty;
         public Chunk(int x, int y, int z) : base(x, y, z)
@@ -54,12 +52,12 @@ namespace Content.Universe
             isDirty = true;
             base.SetVoxel(x, y, z, type);
         }
-        public void Dispose()
+        public override void Dispose()
         {
-            //Mesh.Buffer.Dispose();
             Mesh.VertexBuffer.Dispose();
             Mesh.IndexBuffer.Dispose();
             Mesh.BufferStructure.Dispose();
+            base.Dispose();
         }
     }
 }

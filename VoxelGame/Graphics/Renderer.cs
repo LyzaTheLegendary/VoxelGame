@@ -57,8 +57,7 @@ namespace Graphics
         public void RenderChunk(Chunk chunk, Shader shader, TextureAtlas2D texture)
         {
             GraphicsDevice.Bind(shader);
-            //shader.SetUniform(texture.Columns, "u_columns");
-            //shader.SetUniform(Chunk.BATCH_SIZE, "u_batchSize");
+
             shader.SetUniform(Matrix4.CreateTranslation(chunk.Position) * Camera.GetViewMatrix() * Projection, "u_transformations");
             
             
@@ -70,7 +69,6 @@ namespace Graphics
             chunk.UpdateIfDirty();
 
             GL.DrawElements(PrimitiveType.Triangles, chunk.Mesh.IndexBuffer.Count(), DrawElementsType.UnsignedInt, IntPtr.Zero);
-            //GL.DrawElementsInstanced(PrimitiveType.Triangles, chunk.Mesh.IndexBuffer.Count(), DrawElementsType.UnsignedInt, IntPtr.Zero, chunk.Mesh.IndexBuffer.Count());
         }
     }
 }

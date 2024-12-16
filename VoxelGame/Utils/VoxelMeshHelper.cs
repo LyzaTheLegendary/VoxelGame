@@ -51,8 +51,8 @@ namespace Utils
         static public void ProcessFace(List<Vertex> vertices, List<uint> indices, int x, int y, int z, VoxelType voxelType, Vector3i direction)
         {
             int faceIndex = GetFaceIndex(direction);
-            Vector2i texCoord = GetTextureFromAtlas(voxelType, faceIndex);
-
+            Vector2 texCoord = GetTextureFromAtlas(voxelType, faceIndex);
+            
             // Generate a face and add it to the mesh
             int startIndex = vertices.Count;
             Vector3i position = new(x, y, z);
@@ -61,7 +61,7 @@ namespace Utils
             AddFace(vertices, indices, position + new Vector3i(0, 1, 0), texCoord, startIndex, direction);
         }
 
-        static public void AddFace(List<Vertex> vertices, List<uint> indices, Vector3i position, Vector2i texCoord, int startIndex, Vector3i direction)
+        static public void AddFace(List<Vertex> vertices, List<uint> indices, Vector3i position, Vector2 texCoord, int startIndex, Vector3i direction)
         {
             int offset = vertices.Count;
 
@@ -117,20 +117,14 @@ namespace Utils
             indices.Add((uint)(startIndex + 3));
             indices.Add((uint)(startIndex + 0));
         }
-        static public Vector2i GetTextureFromAtlas(VoxelType type, int face)
+        static public Vector2 GetTextureFromAtlas(VoxelType type, int face)
         {
             int index = (ushort)type * 6 + face;
 
-            // Calculate the row and column in the atlas
-            int column = index % ATLAS_ROWS; // 2048 / 16 = 128 columns
-            int row = index / ATLAS_ROWS;    // 2048 / 16 = 128 rows
+            int xCell = index % ATLAS_ROWS;
+            int yCell = (int)Math.Floor((float)(index / ATLAS_ROWS));
 
-            // Calculate the texture coordinates
-            int x = column * CELL_SIZE;
-            int y = row * CELL_SIZE;
-            //return new Vector2i(0, 0);
-            return new Vector2i(x, y);
-
+            return new Vector2(xCell, yCell);
         }
 
         static public int GetFaceIndex(Vector3i direction)

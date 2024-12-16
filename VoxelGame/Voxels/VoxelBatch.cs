@@ -4,10 +4,10 @@ using System.Buffers;
 
 namespace Voxels
 {
-    public class VoxelBatch // implement Idisposable?
+    public class VoxelBatch : IDisposable // implement Idisposable?
     {
         private static ArrayPool<ushort> VoxelPool { get; } = ArrayPool<ushort>.Shared;
-        public const int BATCH_SIZE = 16;
+        public const int BATCH_SIZE = 32;
         public const int TOTAL_SIZE = BATCH_SIZE * BATCH_SIZE * BATCH_SIZE;
         public Vector3i Position { get; init; }
         public ushort[] Voxels { get; private set; }
@@ -20,14 +20,15 @@ namespace Voxels
             for(int i = 0; i < TOTAL_SIZE; i++)
                 Voxels[i] = (ushort)VoxelType.AIR;
         }
-
+        public (int x, int y, int z) GetWorldPosition(int localeX, int localeY, int localeZ) => (Position.X * BATCH_SIZE + localeX, Position.Y * BATCH_SIZE + localeY, Position.Z * BATCH_SIZE + localeZ);
+        
         public virtual VoxelType GetVoxel(Vector3i pos) => GetVoxel(pos.X, pos.Y, pos.Z);
         public virtual VoxelType GetVoxel(int x, int y, int z)
         {
             int index = GetIndex(x, y, z);
 
-            if (index > TOTAL_SIZE || index < 0) return VoxelType.AIR;
-            //throw new ArgumentOutOfRangeException("Voxel coordinates are out of bounds.");
+            if (index > TOTAL_SIZE || index < 0)
+                throw new ArgumentOutOfRangeException("Voxel coordinates are out of bounds.");
 
 
             return (VoxelType)Voxels[index];
@@ -49,10 +50,11 @@ namespace Voxels
         }
 
         protected int GetIndex(int x, int y, int z) => x + (y * BATCH_SIZE) + (z * (BATCH_SIZE * BATCH_SIZE));
-        
-        ~VoxelBatch()
+
+        public virtual void Dispose()
         {
-            //VoxelPool.Return(Voxels, true);
+            VoxelPool.Return(Voxels, false);
         }
+
     }
 }
