@@ -10,10 +10,8 @@ using OpenTK.Windowing.Desktop;
 using Resources;
 using System.Runtime.InteropServices;
 using Graphics.GpuTextures;
-using Voxels;
 using Resources.Components;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using ImGuiNET;
 using Content.Universe;
 
 
@@ -29,7 +27,7 @@ namespace VoxelGame
         private Shader chunkShader;
         private TextureAtlas2D texture; // temp val
         private Vector3 tempPos = new Vector3(0, 0, 0);// temp val
-        private World world = new World("world", WorldType.EARTH);
+        private World world = new World(WorldType.EARTH);
 
         public Application() : base(GameWindowSettings.Default, new NativeWindowSettings
         {
@@ -59,7 +57,6 @@ namespace VoxelGame
 
             if (type == DebugType.DebugTypeError)
                 throw new Exception(message);
-            
         }
         protected override void OnLoad()
         {
@@ -123,10 +120,6 @@ namespace VoxelGame
 
             //TODO: fix Y axis does not work.
             Renderer.RenderChunk(world.GetChunk(0, 0, 0), chunkShader, texture);
-
-            Renderer.RenderChunk(world.GetChunk(0, 1, 0), chunkShader, texture);
-            Renderer.RenderChunk(world.GetChunk(0, -1, 0), chunkShader, texture);
-
             Renderer.RenderChunk(world.GetChunk(1, 0, 0), chunkShader, texture);
             Renderer.RenderChunk(world.GetChunk(0, 0, 1), chunkShader, texture);
             Renderer.RenderChunk(world.GetChunk(0, 0, -1), chunkShader, texture);

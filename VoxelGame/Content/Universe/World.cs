@@ -10,26 +10,24 @@ namespace Content.Universe
     public class World
     {
         ConcurrentDictionary<(int, int, int), Chunk> LoadedChunks { get; init; } = new ConcurrentDictionary<(int, int, int), Chunk>();
-        private WorldGeneratorService worldGenerator;
-        public string WorldName { get; init; }
+        WorldGenerator worldGenerator;
         public WorldType Type { get; init; }
-        public World(string name, WorldType type = WorldType.EARTH)
+        public World(WorldType type = WorldType.EARTH)
         {
-            WorldName = name;
             Type = type;
             worldGenerator = new FlatWorldGenerator(123);
         }
 
         public Chunk GetChunk(int x, int y, int z)
         {
-            var chunkCoords = NormalizeCoordinates(x, y, z);
+            (int chunkX, int chunkY, int chunkZ) = NormalizeCoordinates(x, y, z);
 
-            if (!LoadedChunks.TryGetValue(chunkCoords, out Chunk? chunk))
+            if (!LoadedChunks.TryGetValue((chunkX, chunkY, chunkZ), out Chunk? chunk))
             {
-                chunk = new Chunk(chunkCoords.Item1, chunkCoords.Item2, chunkCoords.Item3);
+                chunk = new Chunk(chunkX, chunkY, chunkZ);
                 worldGenerator.Generate(chunk);
 
-                if (LoadedChunks.TryAdd(chunkCoords, chunk))
+                if (LoadedChunks.TryAdd((chunkX, chunkY, chunkZ), chunk))
                     return chunk;
                 else
                     throw new Exception("Failed to add chunk to world");
@@ -42,6 +40,12 @@ namespace Content.Universe
             (int chunkX, int chunkY, int chunkZ) = NormalizeCoordinates(x, y, z);
 
             return GetChunk(chunkX, chunkY, chunkZ).GetVoxel(x - chunkX, y - chunkY, z - chunkZ);
+        }
+        public void SetBlockAt(int x, int y, int z, VoxelType type)
+        {
+            (int chunkX, int chunkY, int chunkZ) = NormalizeCoordinates(x, y, z);
+
+            GetChunk(chunkX, chunkY, chunkZ).SetVoxel(x - chunkX, y - chunkY, z - chunkZ, type);
         }
         private (int, int, int) NormalizeCoordinates(int x, int y, int z)
         {

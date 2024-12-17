@@ -21,7 +21,7 @@ namespace Voxels
                 Voxels[i] = (ushort)VoxelType.AIR;
         }
         public (int x, int y, int z) GetWorldPosition(int localeX, int localeY, int localeZ) => (Position.X * BATCH_SIZE + localeX, Position.Y * BATCH_SIZE + localeY, Position.Z * BATCH_SIZE + localeZ);
-        
+        public int GetWorldPositionY(int localeY) => Position.Y * BATCH_SIZE + localeY;
         public virtual VoxelType GetVoxel(Vector3i pos) => GetVoxel(pos.X, pos.Y, pos.Z);
         public virtual VoxelType GetVoxel(int x, int y, int z)
         {

@@ -3,11 +3,20 @@ using Voxels;
 
 namespace Content.Universe
 {
-    public class FlatWorldGenerator : WorldGeneratorService
+    public class FlatWorldGenerator : WorldGenerator
     {
-        public FlatWorldGenerator(int seed) : base(seed)
+        public FlatWorldGenerator(int seed) : base(seed, 4)
         {
 
+        }
+        protected override VoxelType GenerateVoxel(int x, int y, int z, Chunk chunk)
+        {
+            if (y == 5)
+                return VoxelType.GRASS;
+            else if (y < 5)
+                return VoxelType.DIRT;
+            else
+                return VoxelType.AIR;
         }
         public override void Generate(Chunk chunk)
         {

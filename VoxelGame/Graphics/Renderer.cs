@@ -56,6 +56,7 @@ namespace Graphics
 
         public void RenderChunk(Chunk chunk, Shader shader, TextureAtlas2D texture)
         {
+            
             GraphicsDevice.Bind(shader);
 
             shader.SetUniform(Matrix4.CreateTranslation(chunk.Position) * Camera.GetViewMatrix() * Projection, "u_transformations");
