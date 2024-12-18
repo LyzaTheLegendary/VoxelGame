@@ -13,6 +13,8 @@ using Graphics.GpuTextures;
 using Resources.Components;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Content.Universe;
+using Content.Universe.Entities;
+using VoxelGame.Resources.Components;
 
 
 namespace VoxelGame
@@ -28,7 +30,7 @@ namespace VoxelGame
         private TextureAtlas2D texture; // temp val
         private Vector3 tempPos = new Vector3(0, 0, 0);// temp val
         private World world = new World(WorldType.EARTH);
-
+        private Player player;
         public Application() : base(GameWindowSettings.Default, new NativeWindowSettings
         {
             API = ContextAPI.OpenGL,
@@ -64,7 +66,7 @@ namespace VoxelGame
             GraphicsDevice.Init();
             CursorState = CursorState.Grabbed;
             Renderer = new Renderer(new Camera3D(45f, 1920f, 1080f));
-
+            player = new Player(world, tempPos, "test123");
             GL.Enable(EnableCap.DepthTest);
             GL.DepthFunc(DepthFunction.Less);
             //TODO: fix culling
@@ -119,11 +121,12 @@ namespace VoxelGame
             Renderer.Clear();
 
             //TODO: fix Y axis does not work.
-            Renderer.RenderChunk(world.GetChunk(0, 0, 0), chunkShader, texture);
-            Renderer.RenderChunk(world.GetChunk(1, 0, 0), chunkShader, texture);
-            Renderer.RenderChunk(world.GetChunk(0, 0, 1), chunkShader, texture);
-            Renderer.RenderChunk(world.GetChunk(0, 0, -1), chunkShader, texture);
-            Renderer.RenderChunk(world.GetChunk(-1, 0, 0), chunkShader, texture);
+            Renderer.RenderSingleVoxel(Voxels.VoxelType.DIRT, new Vector3(0, 0, 0), GameContent.GetShape("Cylinder"), shader, texture);
+            //Renderer.RenderChunk(world.GetChunk(0, 0, 0), chunkShader, texture);
+            //Renderer.RenderChunk(world.GetChunk(1, 0, 0), chunkShader, texture);
+            //Renderer.RenderChunk(world.GetChunk(0, 0, 1), chunkShader, texture);
+            //Renderer.RenderChunk(world.GetChunk(0, 0, -1), chunkShader, texture);
+            //Renderer.RenderChunk(world.GetChunk(-1, 0, 0), chunkShader, texture);
 
 
             Context.SwapBuffers();

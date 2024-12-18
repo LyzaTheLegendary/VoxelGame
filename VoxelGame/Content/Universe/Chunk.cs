@@ -18,6 +18,7 @@ namespace Content.Universe
     {
         public ChunkMesh Mesh { get; init; }
         private bool isDirty;
+        public int Players { get; set; } = 0;
         public Chunk(int x, int y, int z) : base(x, y, z)
         {
             Mesh = new ChunkMesh()

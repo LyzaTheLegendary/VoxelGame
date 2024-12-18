@@ -5,7 +5,7 @@ namespace Content.Universe
 {
     public class FlatWorldGenerator : WorldGenerator
     {
-        public FlatWorldGenerator(int seed) : base(seed, 4)
+        public FlatWorldGenerator(int seed) : base(seed)
         {
 
         }

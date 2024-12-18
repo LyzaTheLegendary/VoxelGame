@@ -18,6 +18,12 @@ namespace Content.Universe
             worldGenerator = new FlatWorldGenerator(123);
         }
 
+        public void GenerateChunk(int x, int y, int z)
+        {
+            (int chunkX, int chunkY, int chunkZ) = NormalizeCoordinates(x, y, z);
+            GetChunk(chunkX, chunkY, chunkZ);
+        }
+
         public Chunk GetChunk(int x, int y, int z)
         {
             (int chunkX, int chunkY, int chunkZ) = NormalizeCoordinates(x, y, z);

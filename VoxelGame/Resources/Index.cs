@@ -10,6 +10,14 @@ namespace Resources
         public Index() { 
            
         }
+
+        public bool HasReference(FileType type, string filename)
+        {
+            fileIndex.TryGetValue(type, out List<string>? list);
+
+            bool? result = list?.Contains(filename);
+            return (result == null) ? false : result!.Value;
+        }
         public void AddReference(FileType type, string filename)
         {
             if (!fileIndex.TryGetValue(type, out _))

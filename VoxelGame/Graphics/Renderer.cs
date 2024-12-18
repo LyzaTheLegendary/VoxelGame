@@ -1,4 +1,5 @@
 ﻿using Content.Universe;
+using Content.Universe.Entities;
 using Graphics.Camera;
 using Graphics.GpuComputing;
 using Graphics.GpuMemory;
@@ -51,6 +52,20 @@ namespace Graphics
             //For the texture atlas, It needs a offset of 5 between each index, So the other slots are filled with the other faces.
             shader.SetUniform((int)type * cubeFaceCount, "u_index");
             
+            GL.DrawElements(PrimitiveType.Triangles, shape.ElementArray.Count(), DrawElementsType.UnsignedInt, IntPtr.Zero);
+        }
+
+        public void RenderEntity(Entity entity, Shape shape, Shader shader, TextureAtlas2D texture)
+        {
+            GraphicsDevice.Bind(shader);
+            GraphicsDevice.Bind(shape.BufferStructure);
+            GraphicsDevice.Bind(shape.ElementArray);
+            GraphicsDevice.Bind(shape.VertexArray);
+            GraphicsDevice.Bind(texture);
+
+            shader.SetUniform(entity.GetTransformations() * Camera.GetViewMatrix() * Projection, "u_transformations");
+            shader.SetUniform((short)entity.EntityType, "u_entityType");
+
             GL.DrawElements(PrimitiveType.Triangles, shape.ElementArray.Count(), DrawElementsType.UnsignedInt, IntPtr.Zero);
         }
 

@@ -13,10 +13,27 @@ namespace Resources
         private ArrayPool<byte> arrPool = ArrayPool<byte>.Shared;
         const string RESOURCE_PATH = "./Resource";
 
+        //TODO: fill the index automatically and create folders if they do not exist / clean up
         private Index index;
         public Storage()
         {
             index = new Index();
+
+            string path = Path.Combine(RESOURCE_PATH, "index");
+
+            if (Exist(path))
+                using (Resource<Index> resource = GetResource<Index>(path))
+                    index = resource.GetComponent();
+
+            string shapePath = Path.Combine(RESOURCE_PATH, "Shapes");
+            foreach (string shapeLocation in Directory.GetFiles(shapePath))
+            {
+                string filename = shapeLocation.Substring(RESOURCE_PATH.Length).TrimStart(Path.DirectorySeparatorChar);
+
+                if (!index.HasReference(FileType.SHAPE, filename))
+                    index.AddReference(FileType.SHAPE, filename);
+                
+            };
         }
         public void StoreResource(ICreatorService creator) // this could be done by a thread
         {
@@ -35,9 +52,10 @@ namespace Resources
             };
 
             IEnumerable<byte> data = MarshalHelper.ToBytes(header).Concat(creator.GetResource());
-
             
-            index.AddReference(creator.FileType, creator.Filename);
+            //if(!index.HasReference(creator.FileType, creator.Filename))
+            //    index.AddReference(creator.FileType, creator.Filename);
+
             File.WriteAllBytes(path, data as byte[] ?? data.ToArray());
         }
         public Resource<T> GetResource<T>(string filename) where T : IComponent
@@ -74,11 +92,7 @@ namespace Resources
         public void Save() => StoreResource(new IndexCreatorService(index));
         public void Load()
         {
-            string path = Path.Combine(RESOURCE_PATH, "index");
 
-            if (Exist(path))
-                using (Resource<Index> resource = GetResource<Index>(path))
-                    index = resource.GetComponent();
 
             foreach (var entry in index.GetIndex())
             {

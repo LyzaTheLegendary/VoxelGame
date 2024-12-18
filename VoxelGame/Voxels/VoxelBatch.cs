@@ -4,7 +4,7 @@ using System.Buffers;
 
 namespace Voxels
 {
-    public class VoxelBatch : IDisposable // implement Idisposable?
+    public class VoxelBatch : IDisposable
     {
         private static ArrayPool<ushort> VoxelPool { get; } = ArrayPool<ushort>.Shared;
         public const int BATCH_SIZE = 32;
