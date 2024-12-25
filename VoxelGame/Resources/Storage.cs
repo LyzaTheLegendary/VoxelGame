@@ -25,7 +25,10 @@ namespace Resources
                 using (Resource<Index> resource = GetResource<Index>(path))
                     index = resource.GetComponent();
 
+            // move this code to index.
             string shapePath = Path.Combine(RESOURCE_PATH, "Shapes");
+            Directory.CreateDirectory(shapePath);
+
             foreach (string shapeLocation in Directory.GetFiles(shapePath))
             {
                 string filename = shapeLocation.Substring(RESOURCE_PATH.Length).TrimStart(Path.DirectorySeparatorChar);

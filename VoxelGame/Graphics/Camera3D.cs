@@ -43,7 +43,7 @@ namespace Graphics.Camera {
             Yaw = yaw;
             Pitch = pitch;
             lastPos = new Vector2(0f, 0f);
-            Front = new Vector3(0.0f, 0.0f, -1.0f); // probably shouldn't be -1f but idk it works lol
+            Front = -Vector3.UnitZ;//new Vector3(0.0f, 0.0f, -1.0f); // probably shouldn't be -1f but idk it works lol
             UpdateCameraVectors();
         }
 

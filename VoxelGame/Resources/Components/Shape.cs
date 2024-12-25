@@ -8,6 +8,9 @@ using OpenTK.Graphics.OpenGL4;
 using System.Runtime.InteropServices;
 namespace VoxelGame.Resources.Components
 {
+
+
+    //TODO: phase out for model class.
     public class Shape() : IComponent, IDisposable
     {
         private bool disposedValue;

@@ -14,7 +14,6 @@ using Resources.Components;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Content.Universe;
 using Content.Universe.Entities;
-using VoxelGame.Resources.Components;
 
 
 namespace VoxelGame
@@ -93,6 +92,10 @@ namespace VoxelGame
 
             using(Resource<Bitmap> Resource = Storage.GetResource<Bitmap>("Textures/BlockAtlas.bitmap"))
                 texture = GraphicsDevice.AllocateTextureAtlas(Resource.GetComponent(), TextureUnit.Texture0);
+
+            Model model;
+            using(Resource<Model> Resource = Storage.GetResource<Model>("Model/test.model"))
+                model = Resource.GetComponent();
         }
         protected override void OnUnload()
         {
@@ -121,7 +124,7 @@ namespace VoxelGame
             Renderer.Clear();
 
             //TODO: fix Y axis does not work.
-            Renderer.RenderSingleVoxel(Voxels.VoxelType.DIRT, new Vector3(0, 0, 0), GameContent.GetShape("Cylinder"), shader, texture);
+            Renderer.RenderSingleVoxel(Voxels.VoxelType.DIRT, new Vector3(0, 7, 0), GameContent.GetShape("Object_4"), shader, texture);
             //Renderer.RenderChunk(world.GetChunk(0, 0, 0), chunkShader, texture);
             //Renderer.RenderChunk(world.GetChunk(1, 0, 0), chunkShader, texture);
             //Renderer.RenderChunk(world.GetChunk(0, 0, 1), chunkShader, texture);

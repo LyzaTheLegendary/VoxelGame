@@ -21,8 +21,6 @@ namespace Content.Universe.Entities
                 {
                     for (int z = -Radius; z < Radius; z++)
                     {
-                        //if (Math.Sqrt(x * x + y * y + z * z) <= Radius)
-                        //{
                         if (!LoadedChunks.Contains((x, y, z)))
                         {
                             LoadedChunks.Add((x, y, z));
@@ -30,7 +28,6 @@ namespace Content.Universe.Entities
 
                             chunk.Players++;
                         }
-                       // }
                     }
                 }
             }

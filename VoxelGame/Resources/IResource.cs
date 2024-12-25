@@ -3,6 +3,7 @@
     public enum FileType : int
     {
         SHAPE,
+        MODEL,
         TRANSLATION,
         TEXTURE,
         TEXTURE_ATLAS,
