@@ -13,23 +13,18 @@ namespace Resources.Components
         public int ParentIndex { get; init; }
         public int Index { get; init; }
     }
-    public struct Mesh
-    {
-        public GpuArrayBuffer<uint> ElementArray { get; set; }
-        public GpuArrayBuffer<BonedVertex> VertexArray { get; set; }
-        public GpuBufferStructure BufferStructure { get; set; }
-    }
+    // TODO: load in their texture using bindless textures.
     public class Model() : IComponent, IDisposable
     {
         public string Name { get; private set; }
-        public Mesh mesh = new();
+        public Mesh<BonedVertex> Mesh { get; private set; }
         public Bone[] Skeleton { get; private set; }
         public Animation[] Animations { get; private set; }
         public Animation? GetAnimation(string name) => Animations.FirstOrDefault(a => a.Name == name);
+        public Bone[] GetBones() => Skeleton;
         public void CreateResourceFromData(IEnumerable<byte> data)
         {
             using (MemoryStream stream = new(data as byte[] ?? data.ToArray())) {
-
                 Name = stream.ReadString();
 
                 int vertexBufferLength = stream.Read<int>();
@@ -60,29 +55,34 @@ namespace Resources.Components
 
                 int animationCount = stream.Read<int>();
 
-                Animation[] Animations = new Animation[animationCount];
+                Animations = new Animation[animationCount];
 
                 for (int i = 0; i < animationCount; i++)
                     Animations[i] = new Animation(stream);
 
-                mesh.BufferStructure = GraphicsDevice.AllocateArrayStructure();
-                mesh.ElementArray = GraphicsDevice.AllocateArray<uint>(indices, BufferUsageHint.StaticDraw, BufferTarget.ElementArrayBuffer);
-                mesh.VertexArray = GraphicsDevice.AllocateArray<BonedVertex>(vertexArray, BufferUsageHint.StaticDraw, BufferTarget.ArrayBuffer);
+                Mesh = new Mesh<BonedVertex>()
+                {
+                    BufferStructure = GraphicsDevice.AllocateArrayStructure(),
+                    IndexBuffer = GraphicsDevice.AllocateArray<uint>(indices, BufferUsageHint.StaticDraw, BufferTarget.ElementArrayBuffer),
+                    VertexBuffer = GraphicsDevice.AllocateArray<BonedVertex>(vertexArray, BufferUsageHint.StaticDraw, BufferTarget.ArrayBuffer)
+                };
 
-                mesh.BufferStructure.SetVertexArray(mesh.VertexArray);
+                Mesh.BufferStructure.SetVertexArray(Mesh.VertexBuffer);
 
-                mesh.BufferStructure.AddAttribute(3, VertexAttribType.Float, false, 0);
-                mesh.BufferStructure.AddAttribute(2, VertexAttribType.Float, false, Marshal.SizeOf<Vector3>());
-                mesh.BufferStructure.AddAttribute(1, VertexAttribType.Int, false, Marshal.SizeOf<Vector3>() + Marshal.SizeOf<Vector2>());
-                mesh.BufferStructure.AddAttribute(1, VertexAttribType.Float, false, Marshal.SizeOf<Vector3>() + Marshal.SizeOf<Vector2>() + sizeof(int));
+                Mesh.BufferStructure.AddAttribute(3, VertexAttribType.Float, false, 0);
+                Mesh.BufferStructure.AddAttribute(2, VertexAttribType.Float, false, Marshal.SizeOf<Vector3>());
+                Mesh.BufferStructure.AddAttribute(1, VertexAttribType.Int, false, Marshal.SizeOf<Vector3>() + Marshal.SizeOf<Vector2>());
+                Mesh.BufferStructure.AddAttribute(1, VertexAttribType.Float, false, Marshal.SizeOf<Vector3>() + Marshal.SizeOf<Vector2>() + sizeof(int));
             }
         }
 
         public void Dispose()
         {
-            mesh.ElementArray.Dispose();
-            mesh.VertexArray.Dispose();
-            mesh.BufferStructure.Dispose();
+            Mesh.IndexBuffer.Dispose();
+            Mesh.VertexBuffer.Dispose();
+            Mesh.BufferStructure.Dispose();
+            
+            GC.SuppressFinalize(this);
         }
     }
 }

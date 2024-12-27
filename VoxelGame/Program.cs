@@ -8,7 +8,7 @@ using VoxelGame;
 
 internal class Program
 {
-    static public void Main()
+    public static void Main()
     {
         /*
          TODOS:
@@ -28,12 +28,13 @@ internal class Program
         application.Run();
     }
 
-    public static void AddImagetoStorage(Storage storage)
+    private static void AddImagetoStorage(Storage storage)
     {
         byte[] image = File.ReadAllBytes("BlockAtlas.png");
         storage.StoreResource(new BitmapCreatorService("Textures/BlockAtlas.bitmap", image, true, 16, 16));
     }
-    public static  void AddShaderToStorage(Storage storage)
+
+    private static  void AddShaderToStorage(Storage storage)
     {
         string vertexShader = File.ReadAllText("blockShader.vert");
         string fragmentShader = File.ReadAllText("blockShader.frag");
@@ -73,6 +74,25 @@ internal class Program
         };
 
         storage.StoreResource(new ShaderCreatorService("Shaders/chunkShader.shaders", data2));
+
+        string vertexShader3 = File.ReadAllText("modelShaderVert.glsl");
+        string fragmentShader3 = File.ReadAllText("modelShader.frag");
+
+        ShaderCreatorData[] data3 = new ShaderCreatorData[2];
+
+        data3[0] = new ShaderCreatorData()
+        {
+            ShaderCode = vertexShader3,
+            Type = OpenTK.Graphics.OpenGL4.ShaderType.VertexShader
+        };
+
+        data3[1] = new ShaderCreatorData()
+        {
+            ShaderCode = fragmentShader3,
+            Type = OpenTK.Graphics.OpenGL4.ShaderType.FragmentShader
+        };
+
+        storage.StoreResource(new ShaderCreatorService("Shaders/modelShader.shaders", data3));
     }
     public static void AddCubeToStorage(Storage storage)
     {

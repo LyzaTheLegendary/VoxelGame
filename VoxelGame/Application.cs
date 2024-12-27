@@ -26,6 +26,10 @@ namespace VoxelGame
 
         private Shader shader; // temp value
         private Shader chunkShader;
+        private Shader modelShader;
+        private Model model;
+        private float frame = 0;
+        private Matrix3[] animation;
         private TextureAtlas2D texture; // temp val
         private Vector3 tempPos = new Vector3(0, 0, 0);// temp val
         private World world = new World(WorldType.EARTH);
@@ -40,6 +44,7 @@ namespace VoxelGame
 #endif
         })
         {
+            Thread.CurrentThread.Name = "Game loop";
             Storage = new Storage();
             Title = "VoxelGame demo";
         }
@@ -90,10 +95,12 @@ namespace VoxelGame
             using (Resource<Shader> resource = Storage.GetResource<Shader>("Shaders/chunkShader.shaders"))
                 chunkShader = resource.GetComponent();
 
-            using(Resource<Bitmap> Resource = Storage.GetResource<Bitmap>("Textures/BlockAtlas.bitmap"))
+            using (Resource<Shader> resource = Storage.GetResource<Shader>("Shaders/modelShader.shaders"))
+                modelShader = resource.GetComponent();
+
+            using (Resource<Bitmap> Resource = Storage.GetResource<Bitmap>("Textures/BlockAtlas.bitmap"))
                 texture = GraphicsDevice.AllocateTextureAtlas(Resource.GetComponent(), TextureUnit.Texture0);
 
-            Model model;
             using(Resource<Model> Resource = Storage.GetResource<Model>("Model/test.model"))
                 model = Resource.GetComponent();
         }
@@ -115,6 +122,10 @@ namespace VoxelGame
                 Environment.Exit(0);
 
             Renderer.Camera.InputController(KeyboardState, MouseState, (float)args.Time);
+
+
+            animation = model.GetAnimation("Bend").GetFrame(model.GetBones(), ref frame, (float)args.Time);
+
             base.OnUpdateFrame(args);
         }
 
@@ -123,8 +134,10 @@ namespace VoxelGame
 
             Renderer.Clear();
 
+            
+            Renderer.RenderModel(model, Vector3.Zero, animation, modelShader, texture);
             //TODO: fix Y axis does not work.
-            Renderer.RenderSingleVoxel(Voxels.VoxelType.DIRT, new Vector3(0, 7, 0), GameContent.GetShape("Object_4"), shader, texture);
+            //Renderer.RenderSingleVoxel(Voxels.VoxelType.DIRT, new Vector3(0, 7, 0), GameContent.GetShape("Object_4"), shader, texture);
             //Renderer.RenderChunk(world.GetChunk(0, 0, 0), chunkShader, texture);
             //Renderer.RenderChunk(world.GetChunk(1, 0, 0), chunkShader, texture);
             //Renderer.RenderChunk(world.GetChunk(0, 0, 1), chunkShader, texture);

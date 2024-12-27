@@ -12,7 +12,7 @@ namespace Graphics.GpuComputing
         private bool ready = false;
         private int pointer;
         private bool disposedValue;
-
+        private float[] matrixBuffer = null;
         public Shader(string name)
         {
             Name = name;
@@ -45,7 +45,33 @@ namespace Graphics.GpuComputing
 
             ready = true;
         }
+        public void SetUniform(Matrix3[] matrices, string name)
+        {
+            int location = GL.GetUniformLocation(pointer, name);
 
+            if (location == -1)
+                throw new ArgumentException($"Uniform {name} does not exist");
+
+            int requiredSize = matrices.Length * 9; // Each Matrix3 has 9 elements
+
+            if (matrixBuffer == null || matrixBuffer.Length < requiredSize)
+                matrixBuffer = new float[requiredSize];
+
+            for (int i = 0; i < matrices.Length; i++)
+            {
+                matrixBuffer[i * 9 + 0] = matrices[i].M11;
+                matrixBuffer[i * 9 + 1] = matrices[i].M21;
+                matrixBuffer[i * 9 + 2] = matrices[i].M31;
+                matrixBuffer[i * 9 + 3] = matrices[i].M12;
+                matrixBuffer[i * 9 + 4] = matrices[i].M22;
+                matrixBuffer[i * 9 + 5] = matrices[i].M32;
+                matrixBuffer[i * 9 + 6] = matrices[i].M13;
+                matrixBuffer[i * 9 + 7] = matrices[i].M23;
+                matrixBuffer[i * 9 + 8] = matrices[i].M33;
+            }
+
+            GL.UniformMatrix3(location, matrices.Length, false, matrixBuffer);
+        }
         public void SetUniform(Matrix4 matrix, string name)
         {
             int location = GL.GetUniformLocation(pointer, name);

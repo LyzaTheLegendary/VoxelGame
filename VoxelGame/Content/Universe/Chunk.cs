@@ -8,20 +8,14 @@ using System.Runtime.InteropServices;
 
 namespace Content.Universe
 {
-    public struct ChunkMesh
-    {
-        public GpuArrayBuffer<Vertex> VertexBuffer { get; init; }
-        public GpuArrayBuffer<uint> IndexBuffer { get; init; }
-        public GpuBufferStructure BufferStructure { get; init; }
-    }
     public class Chunk : VoxelBatch
     {
-        public ChunkMesh Mesh { get; init; }
+        public Mesh<Vertex> Mesh { get; private set; }
         private bool isDirty;
         public int Players { get; set; } = 0;
         public Chunk(int x, int y, int z) : base(x, y, z)
         {
-            Mesh = new ChunkMesh()
+            Mesh = new Mesh<Vertex>()
             {
                 VertexBuffer = GraphicsDevice.AllocateArray<Vertex>(null, BufferUsageHint.StaticDraw, BufferTarget.ArrayBuffer),
                 IndexBuffer = GraphicsDevice.AllocateArray<uint>(null, BufferUsageHint.StaticDraw, BufferTarget.ElementArrayBuffer),

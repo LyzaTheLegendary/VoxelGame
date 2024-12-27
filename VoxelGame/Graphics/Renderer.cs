@@ -6,6 +6,7 @@ using Graphics.GpuMemory;
 using Graphics.GpuTextures;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
+using Resources.Components;
 using VoxelGame.Resources.Components;
 using Voxels;
 
@@ -73,18 +74,31 @@ namespace Graphics
         {
             
             GraphicsDevice.Bind(shader);
-
             shader.SetUniform(Matrix4.CreateTranslation(chunk.Position) * Camera.GetViewMatrix() * Projection, "u_transformations");
-            
             
             GraphicsDevice.Bind(chunk.Mesh.VertexBuffer);
             GraphicsDevice.Bind(chunk.Mesh.IndexBuffer);
             GraphicsDevice.Bind(chunk.Mesh.BufferStructure);
             
             GraphicsDevice.Bind(texture);
-            chunk.UpdateIfDirty();
 
+            chunk.UpdateIfDirty();
             GL.DrawElements(PrimitiveType.Triangles, chunk.Mesh.IndexBuffer.Count(), DrawElementsType.UnsignedInt, IntPtr.Zero);
+        }
+
+        public void RenderModel(Model model, Vector3 position, Matrix3[] animationFrame, Shader shader, TextureAtlas2D texture)
+        {
+            GraphicsDevice.Bind(shader);
+            shader.SetUniform(animationFrame, "framesBoneMatrices");
+            shader.SetUniform(Matrix4.CreateTranslation(position) * Camera.GetViewMatrix() * Projection, "u_transformations");
+            
+            GraphicsDevice.Bind(model.Mesh.VertexBuffer);
+            GraphicsDevice.Bind(model.Mesh.IndexBuffer);
+            GraphicsDevice.Bind(model.Mesh.BufferStructure);
+
+            GraphicsDevice.Bind(texture);
+
+            GL.DrawElements(PrimitiveType.Triangles, model.Mesh.IndexBuffer.Count(), DrawElementsType.UnsignedInt, IntPtr.Zero);
         }
     }
 }
