@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 
 namespace Resources.Components
 {
-    public struct Bone()
+    public record struct Bone()
     {
         public string Name { get; init; }
         public int ParentIndex { get; init; }
@@ -46,6 +46,8 @@ namespace Resources.Components
                     int index = stream.Read<int>();
                     Skeleton[i] = new Bone() { Name = name, ParentIndex = parentIndex, Index = index };
                 }
+                
+                Array.Sort(Skeleton, (bone1, bone2) => bone1.Index.CompareTo(bone2.Index));
 
                 for(int i = 0; i <  vertexBufferLength; i++)
                     vertexArray[i] = stream.Read<BonedVertex>();

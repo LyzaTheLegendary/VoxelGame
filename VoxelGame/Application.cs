@@ -68,6 +68,7 @@ namespace VoxelGame
         {
             base.OnLoad();
             GraphicsDevice.Init();
+            TextureManager.Init();
             CursorState = CursorState.Grabbed;
             Renderer = new Renderer(new Camera3D(45f, 1920f, 1080f));
             player = new Player(world, tempPos, "test123");

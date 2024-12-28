@@ -34,7 +34,15 @@ namespace Graphics.GpuMemory
         public int GetPointer() => pointer;
         public int GetBindingPoint() => bindingPoint;
         public int Count() => elementCount;
-        public void Upload(int elementOffset, [NotNull] T[] data, int elementCount)
+        public void Upload(T[] data, BufferUsageHint hint)
+        {
+            if (data is null) 
+                throw new ArgumentNullException(nameof(data));
+
+            this.elementCount = data.Length;
+            GL.NamedBufferData(pointer, elementCount * Marshal.SizeOf<T>(), data, hint);
+        }
+        public void Memset(int elementOffset, [NotNull] T[] data, int elementCount)
         {
             if (data == null) throw new ArgumentNullException(nameof(data));
 

@@ -7,6 +7,10 @@ using Graphics.GpuTextures;
 
 namespace Graphics
 {
+    public enum BindingPoints : int
+    {
+        TEXTURE_HANDLES
+    }
     public enum GpuType
     {
         NVIDIA,
@@ -64,7 +68,6 @@ namespace Graphics
                 MaxBindingPoints = maxBindingPoints,
                 MaxSSBOSize = maxSizeInBytes,
             };
-
         }
         public static long AvailableMemory() // butt fuck broken, have to fix.
         {
@@ -89,9 +92,9 @@ namespace Graphics
 
             return buffer;
         }
-        public static GpuShaderStorageBuffer<T> AllocateShaderBuffer<T>(int count, BufferUsageHint hint, int bindingPoint) where T : struct
+        public static GpuShaderStorageBuffer<T> AllocateShaderBuffer<T>(int count, BufferUsageHint hint, BindingPoints bindingPoint) where T : struct
         {
-            if (count * Marshal.SizeOf<T>() > gpuInfo.MaxSSBOSize || bindingPoint > gpuInfo.MaxBindingPoints)
+            if (count * Marshal.SizeOf<T>() > gpuInfo.MaxSSBOSize || (int)bindingPoint > gpuInfo.MaxBindingPoints)
                 throw new NotSupportedException("Unsupported SSBO interaction");
 
             GL.CreateBuffers(1, out int pointer);
@@ -99,7 +102,7 @@ namespace Graphics
             if (pointer == 0 || !GL.IsBuffer(pointer))
                 throw new Exception("Failed to allocate GL buffer of type: SSBO");
 
-            return new GpuShaderStorageBuffer<T>(pointer, count, hint, bindingPoint);
+            return new GpuShaderStorageBuffer<T>(pointer, count, hint, (int)bindingPoint);
         }
         public static GpuShaderStorageBuffer<T> AllocateShaderBuffer<T>(T[] data, BufferUsageHint hint, int bindingPoint) where T : struct
         {
@@ -145,6 +148,7 @@ namespace Graphics
 
             return textureAtlas;
         }
+        
         public static void Bind<T>(GpuArrayBuffer<T> buffer) where T : struct
         {
             int pointer = buffer.GetPointer();

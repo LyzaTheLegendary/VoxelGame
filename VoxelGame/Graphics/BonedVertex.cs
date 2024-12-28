@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Graphics
 {
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct BonedVertex
     {
         public Vector3 Position { get; init; }
