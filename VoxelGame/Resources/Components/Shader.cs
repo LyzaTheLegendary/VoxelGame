@@ -13,20 +13,32 @@ namespace Graphics.GpuComputing
         private int pointer;
         private bool disposedValue;
         private float[] matrixBuffer = null;
-        public Shader(string name)
+        
+        public Shader(Stream stream)
         {
-            Name = name;
             pointer = GL.CreateProgram();
+            Name = stream.ReadString();
+            int shaders = stream.ReadByte();
+            for (int i = 0; i < shaders; i++)
+            {
+                ShaderType type = (ShaderType)stream.Read<int>();
+                string shaderCode = stream.ReadString();
+
+                ShaderCode code = new ShaderCode(type);
+
+                code.Compile(shaderCode);
+
+                AttachCode(code);
+            }
+
+            Link();
         }
-        public Shader()
-        {
-            // For IResourceFactory
-        }
+
         public void AttachCode(scoped ShaderCode code)
         {
             if (ready)
                 throw new Exception("Cannot attach new code to a already ready program.");
-           
+
             GL.AttachShader(pointer, code.GetPointer());
             code.Delete();
         }
@@ -37,7 +49,7 @@ namespace Graphics.GpuComputing
 
             GL.GetProgram(pointer, GetProgramParameterName.LinkStatus, out int success);
 
-            if(success == 0)
+            if (success == 0)
             {
                 string infoLog = GL.GetProgramInfoLog(pointer);
                 throw new Exception($"Error linking program: {infoLog}");
@@ -45,6 +57,7 @@ namespace Graphics.GpuComputing
 
             ready = true;
         }
+
         public void SetUniform(Matrix3[] matrices, string name)
         {
             int location = GL.GetUniformLocation(pointer, name);
@@ -72,6 +85,7 @@ namespace Graphics.GpuComputing
 
             GL.UniformMatrix3(location, matrices.Length, false, matrixBuffer);
         }
+
         public void SetUniform(Matrix4 matrix, string name)
         {
             int location = GL.GetUniformLocation(pointer, name);
@@ -81,6 +95,7 @@ namespace Graphics.GpuComputing
 
             GL.UniformMatrix4(location, true, ref matrix);
         }
+
         public void SetUniform(Vector3i vector, string name)
         {
             int location = GL.GetUniformLocation(pointer, name);
@@ -90,6 +105,7 @@ namespace Graphics.GpuComputing
 
             GL.Uniform3(location, ref vector);
         }
+
         public void SetUniform(Vector3 vector, string name)
         {
             int location = GL.GetUniformLocation(pointer, name);
@@ -99,6 +115,7 @@ namespace Graphics.GpuComputing
 
             GL.Uniform3(location, ref vector);
         }
+
         public void SetUniform(int number, string name)
         {
             int location = GL.GetUniformLocation(pointer, name);
@@ -108,49 +125,28 @@ namespace Graphics.GpuComputing
 
             GL.Uniform1(location, number);
         }
+
         public int GetPointer() => pointer;
         public void Bind() => GL.UseProgram(pointer);
+
         protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue)
             {
                 if (disposing)
                     GL.DeleteProgram(pointer);
-                
+
                 disposedValue = true;
             }
         }
 
         ~Shader() => Dispose(disposing: false);
-        
+
 
         public void Dispose()
         {
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
-        }
-
-        public void CreateResourceFromData(IEnumerable<byte> data)
-        {
-            pointer = GL.CreateProgram();
-            using (MemoryStream stream = new MemoryStream(data as byte[] ?? data.ToArray()))
-            {
-                Name = stream.ReadString();
-                int shaders = stream.ReadByte();
-                for(int i = 0; i < shaders; i++)
-                {
-                    ShaderType type = (ShaderType)stream.Read<int>();
-                    string shaderCode = stream.ReadString();
-
-                    ShaderCode code = new ShaderCode(type);
-
-                    code.Compile(shaderCode);
-
-                    AttachCode(code);
-                }
-            }
-
-            Link();
         }
     }
 

@@ -1,11 +1,12 @@
 ﻿using Graphics.GpuMemory;
 using Graphics.GpuTextures;
 using OpenTK.Graphics.OpenGL4;
+using Resources.Components;
 using Buffer = OpenTK.Graphics.OpenGL4.Buffer;
 
 namespace Graphics;
 
-public static class TextureManager
+public static class TextureManager // TODO: make a check for textures that have not been used for many frames and unload them.
 {
     private static List<Texture2D> textures = new();
     private static long[] liveIndex = new long[100];
@@ -21,7 +22,12 @@ public static class TextureManager
     }
 
     // Returns the handle of the texture in the texture manager.
-    public static void AddTexture(Texture2D texture)
+
+    public static long AddTexture(Bitmap bitmap)
+    {
+        return AddTexture(GraphicsDevice.AllocateTexture(bitmap, TextureUnit.Texture0));
+    }
+    public static long AddTexture(Texture2D texture)
     {
         if (texture.Handle == 0)
             texture.MakeResident();
@@ -38,17 +44,19 @@ public static class TextureManager
         textureHandleBuffer.Memset(index, new long[] { texture.Handle }, 1);
 
         TextureHeapSize += texture.Width * texture.Height;
+        
+        return texture.Handle;
     }
 
     public static Texture2D GetTexture(int index) => textures[index];
-    public static void UnloadTexture(int index)
+    public static void UnloadTexture(long index) // should fix this but lazy?
     {
-        Texture2D texture = textures[index];
+        Texture2D texture = textures[(int)index];
         
         textures.Remove(texture);
         
         liveIndex[index] = 0;
-        unusedIndexes.Enqueue(index);
+        unusedIndexes.Enqueue((int)index);
         
         texture.MakeNonResident();
         texture.Dispose();

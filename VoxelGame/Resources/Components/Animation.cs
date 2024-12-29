@@ -28,6 +28,7 @@ namespace Resources.Components
                 Frames.Add(frame);
             }
         }
+
         public Matrix3[] GetFrame(Bone[] bones, ref float currentFrameIndex, float deltaTime, float animationSpeed = 1f)
         {
             if (TotalFrames < 2)
@@ -43,6 +44,12 @@ namespace Resources.Components
             for (int i = 0; i < BoneCount; i++)
             {
                 Bone bone = bones[i];
+                if (bone.Index < 0 || bone.Index >= BoneCount)
+                {
+                    interpolatedFrame[i] = Matrix3.Identity;
+                    continue;
+                }
+                
                 interpolatedFrame[i] = MatrixHelper.Lerp(Frames[frameA][bone.Index], Frames[frameB][bone.Index], t);
             }
 
@@ -51,25 +58,6 @@ namespace Resources.Components
             return interpolatedFrame;
         }
 
-        public void CreateResourceFromData(IEnumerable<byte> data)
-        {
-            using MemoryStream stream = new(data as byte[] ?? data.ToArray());
-
-            Name = stream.ReadString();
-            TotalFrames = stream.Read<int>();
-            BoneCount = stream.Read<int>();
-
-            Frames = new List<Matrix3[]>(TotalFrames);
-
-            for (int i = 0; i < TotalFrames; i++)
-            {
-                Matrix3[] frame = new Matrix3[BoneCount];
-                for (int frameIndex = 0; frameIndex < BoneCount; frameIndex++)
-                    frame[frameIndex] = stream.Read<Matrix3>();
-
-                Frames.Add(frame);
-            }
-        }
     }
 
 }

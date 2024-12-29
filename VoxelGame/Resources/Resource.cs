@@ -23,10 +23,8 @@ public class Resource<T> : IResource<T> where T : IComponent
         if (disposedValue)
             throw new ObjectDisposedException(nameof(Resource<T>));
 
-        T resource = Activator.CreateInstance<T>();
-        resource.CreateResourceFromData(data);
-
-        return resource;
+        using Stream stream = new MemoryStream(data as byte[] ?? data.ToArray());
+        return (T)Activator.CreateInstance(typeof(T), stream)!;
     }
 
     public void Dispose()

@@ -11,7 +11,7 @@ namespace VoxelGame.Resources.Components
 
 
     //TODO: phase out for model class.
-    public class Shape() : IComponent, IDisposable
+    public class Shape : IComponent, IDisposable
     {
         private bool disposedValue;
 
@@ -20,32 +20,29 @@ namespace VoxelGame.Resources.Components
         public GpuArrayBuffer<Vertex> VertexArray { get; private set; }
         public GpuBufferStructure BufferStructure { get; private set; }
 
-        public void CreateResourceFromData(IEnumerable<byte> data)
+        public Shape(Stream stream)
         {
-            using (MemoryStream stream = new MemoryStream(data as byte[] ?? data.ToArray()))
-            {
-                Name = stream.ReadString();
-                int vertices = stream.Read<int>();
-                int indices = stream.Read<int>();
+            Name = stream.ReadString();
+            int vertices = stream.Read<int>();
+            int indices = stream.Read<int>();
 
-                Vertex[] vertexArray = new Vertex[vertices];
-                uint[] indiceArray = new uint[indices];
+            Vertex[] vertexArray = new Vertex[vertices];
+            uint[] indiceArray = new uint[indices];
 
-                for (int i = 0; i < vertices; i++)
-                    vertexArray[i] = stream.Read<Vertex>();
+            for (int i = 0; i < vertices; i++)
+                vertexArray[i] = stream.Read<Vertex>();
 
-                for (int i = 0; i < indices; i++)
-                    indiceArray[i] = stream.Read<uint>();
+            for (int i = 0; i < indices; i++)
+                indiceArray[i] = stream.Read<uint>();
 
-                VertexArray = GraphicsDevice.AllocateArray(vertexArray, BufferUsageHint.StaticRead, BufferTarget.ArrayBuffer);
-                ElementArray = GraphicsDevice.AllocateArray(indiceArray, BufferUsageHint.StaticRead, BufferTarget.ElementArrayBuffer);
+            VertexArray = GraphicsDevice.AllocateArray(vertexArray, BufferUsageHint.StaticRead, BufferTarget.ArrayBuffer);
+            ElementArray = GraphicsDevice.AllocateArray(indiceArray, BufferUsageHint.StaticRead, BufferTarget.ElementArrayBuffer);
 
-                BufferStructure = GraphicsDevice.AllocateArrayStructure();
-                BufferStructure.SetVertexArray(VertexArray);
+            BufferStructure = GraphicsDevice.AllocateArrayStructure();
+            BufferStructure.SetVertexArray(VertexArray);
 
-                BufferStructure.AddAttribute(3, VertexAttribType.Float, false, 0);
-                BufferStructure.AddAttribute(2, VertexAttribType.Float, false, Marshal.SizeOf<Vector3>());
-            }
+            BufferStructure.AddAttribute(3, VertexAttribType.Float, false, 0);
+            BufferStructure.AddAttribute(2, VertexAttribType.Float, false, Marshal.SizeOf<Vector3>());
         }
 
         protected virtual void Dispose(bool disposing)

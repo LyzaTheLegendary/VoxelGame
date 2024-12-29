@@ -4,8 +4,8 @@ namespace Graphics.GpuComputing
 {
     public ref struct ShaderCode
     {
-        public readonly ShaderType Type { get; init; }
-        private int pointer;
+        public ShaderType Type { get; }
+        private readonly int pointer;
         private bool compiled = false;
         public ShaderCode(ShaderType shaderType)
         {

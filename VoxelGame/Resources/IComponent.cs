@@ -1,7 +1,6 @@
 ﻿namespace Resources
 {
-    public interface IComponent
+    public interface IComponent // Every IComponent should have a constructor that only takes in a stream!
     {
-        public void CreateResourceFromData(IEnumerable<byte> data);
     }
 }

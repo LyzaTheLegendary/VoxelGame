@@ -29,7 +29,11 @@ namespace Graphics.GpuMemory
 
             GL.EnableVertexArrayAttrib(pointer, index);
             GL.VertexArrayAttribBinding(pointer, index, 0);
-            GL.VertexArrayAttribFormat(pointer, index, elementCount, type, normalized, offset);
+            
+            if(type == VertexAttribType.Int)
+                GL.VertexArrayAttribIFormat(pointer, index, elementCount, type, offset);
+            else
+                GL.VertexArrayAttribFormat(pointer, index, elementCount, type, normalized, offset);
             
 
         }

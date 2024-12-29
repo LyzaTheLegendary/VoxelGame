@@ -7,10 +7,27 @@ namespace Resources
     {
         private int files = 0;
         private ConcurrentDictionary<FileType, List<string>> fileIndex = new();
-        public Index() { 
-           
+
+        public Index()
+        {
+            
         }
 
+        public Index(Stream stream)
+        {
+            files = stream.Read<int>();
+
+            for (int i = 0; i < files; i++)
+            {
+                FileType type = (FileType)stream.Read<int>();
+                string filename = stream.ReadString();
+
+                if(!fileIndex.TryGetValue(type, out _))
+                    fileIndex[type] = new List<string>();
+
+                fileIndex[type].Add(filename);
+            }
+        }
         public bool HasReference(FileType type, string filename)
         {
             fileIndex.TryGetValue(type, out List<string>? list);
@@ -34,23 +51,5 @@ namespace Resources
             fileIndex[type].Remove(filename);
         }
         public ConcurrentDictionary<FileType, List<string>> GetIndex() => fileIndex;
-        public void CreateResourceFromData(IEnumerable<byte> data)
-        {
-            using (MemoryStream ms = new MemoryStream(data as byte[] ?? data.ToArray()))
-            {
-                files = ms.Read<int>();
-
-                for (int i = 0; i < files; i++)
-                {
-                    FileType type = (FileType)ms.Read<int>();
-                    string filename = ms.ReadString();
-
-                    if(!fileIndex.TryGetValue(type, out _))
-                        fileIndex[type] = new List<string>();
-
-                    fileIndex[type].Add(filename);
-                }
-            }
-        }
     }
 }

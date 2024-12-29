@@ -21,15 +21,30 @@ namespace Graphics.GpuTextures
 
         public void Upload(Bitmap bitmap)
         {
+            // Height = bitmap.Height;
+            // Width = bitmap.Width;
+            // Size = bitmap.Data.Length;
+            //
+            // GL.ActiveTexture(TextureUnit);
+            // GL.BindTexture(TextureTarget.Texture2D, pointer);
+            //
+            // GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, Width, Height, 0, Format, PixelType.UnsignedByte, bitmap.Data);
+            //
+            // GL.TextureParameter(pointer, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
+            // GL.TextureParameter(pointer, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
+            // GL.TextureParameter(pointer, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+            // GL.TextureParameter(pointer, TextureParameterName.TextureMagFilter, (int)TextureMinFilter.Nearest);
+            //
+            //
             Height = bitmap.Height;
             Width = bitmap.Width;
             Size = bitmap.Data.Length;
 
-            GL.ActiveTexture(TextureUnit);
-            GL.BindTexture(TextureTarget.Texture2D, pointer);
+            // Upload the texture data directly to the texture object
+            GL.TextureStorage2D(pointer, 1, SizedInternalFormat.Rgba8, Width, Height);
+            GL.TextureSubImage2D(pointer, 0, 0, 0, Width, Height, Format, PixelType.UnsignedByte, bitmap.Data);
 
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, Width, Height, 0, Format, PixelType.UnsignedByte, bitmap.Data);
-
+            // Set texture parameters directly on the texture object
             GL.TextureParameter(pointer, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
             GL.TextureParameter(pointer, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
             GL.TextureParameter(pointer, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);

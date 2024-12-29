@@ -16,28 +16,25 @@ namespace Resources.Components
         public int CellHeight { get; private set; } = 0;
         public int TotalCells { get; private set; } = 0;
 
-        public void CreateResourceFromData(IEnumerable<byte> data)
+        public Bitmap(Stream stream)
         {
-            using (var stream = new MemoryStream(data as byte[] ?? data.ToArray()))
+            Format = (PixelFormat)stream.Read<int>();
+            Height = stream.Read<int>();
+            Width = stream.Read<int>();
+
+            if(IsAtlas = stream.ReadByte() == 1)
             {
-                Format = (PixelFormat)stream.Read<int>();
-                Height = stream.Read<int>();
-                Width = stream.Read<int>();
-
-                if(IsAtlas = stream.ReadByte() == 1)
-                {
-                    Rows = stream.Read<int>();
-                    Columns = stream.Read<int>();
-                    CellWidth = stream.Read<int>();
-                    CellHeight = stream.Read<int>();
-                    TotalCells = Rows * Columns;
-                }
-
-                int length = stream.Read<int>();
-                Data = new byte[length];
-
-                stream.ReadExactly(Data, 0, length);
+                Rows = stream.Read<int>();
+                Columns = stream.Read<int>();
+                CellWidth = stream.Read<int>();
+                CellHeight = stream.Read<int>();
+                TotalCells = Rows * Columns;
             }
+
+            int length = stream.Read<int>();
+            Data = new byte[length];
+
+            stream.ReadExactly(Data, 0, length);
         }
     }
 }
