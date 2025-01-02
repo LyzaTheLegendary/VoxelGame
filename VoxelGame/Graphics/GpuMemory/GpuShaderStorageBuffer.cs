@@ -42,17 +42,19 @@ namespace Graphics.GpuMemory
             this.elementCount = data.Length;
             GL.NamedBufferData(pointer, elementCount * Marshal.SizeOf<T>(), data, hint);
         }
+
         public void Memset(int elementOffset, [NotNull] T[] data, int elementCount)
         {
-            if (data == null) throw new ArgumentNullException(nameof(data));
+            if (data.Length + elementOffset > this.elementCount)
+                throw new ArgumentOutOfRangeException(nameof(data),
+                    $"Data exceeds the buffer capacity of {this.elementCount}.");
 
-            if (data.Length + elementOffset > elementCount)
-                throw new ArgumentOutOfRangeException(nameof(data), " exceeds the buffer capacity.");
+            int byteOffset = elementOffset * Marshal.SizeOf<T>();
+            int byteSize = elementCount * Marshal.SizeOf<T>();
 
-
-            GL.NamedBufferSubData<T>(pointer, elementOffset * Marshal.SizeOf<T>(), elementCount * Marshal.SizeOf<T>(), data);
-            //GL.NamedBufferSubData<T>(pointer, (elementOffset + data.Length) * Marshal.SizeOf<T>(), data.Length * Marshal.SizeOf<T>(), data);
+            GL.NamedBufferSubData(pointer, byteOffset, byteSize, data);
         }
+
         public void Bind() => GL.BindBuffer(BufferTarget.ShaderStorageBuffer, pointer);
 
         public void Delete()

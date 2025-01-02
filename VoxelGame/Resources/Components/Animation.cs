@@ -8,7 +8,7 @@ namespace Resources.Components
         public string Name { get; private set; }
         public int TotalFrames { get; private set; }
         public int BoneCount { get; private set; }
-        //private float CurrentFrameIndex { get; set; } = 0f; //should also make this a ref variable so the animation can be used in multiple places
+        public int TickSpeed { get; private set; } // Blender default is 24
         public List<Matrix3[]> Frames { get; private set; }
 
         public Animation(Stream stream)
@@ -16,7 +16,8 @@ namespace Resources.Components
             Name = stream.ReadString();
             TotalFrames = stream.Read<int>();
             BoneCount = stream.Read<int>();
-
+            TickSpeed = stream.Read<int>();
+            
             Frames = new List<Matrix3[]>(TotalFrames);
 
             for (int i = 0; i < TotalFrames; i++)
@@ -44,16 +45,11 @@ namespace Resources.Components
             for (int i = 0; i < BoneCount; i++)
             {
                 Bone bone = bones[i];
-                if (bone.Index < 0 || bone.Index >= BoneCount)
-                {
-                    interpolatedFrame[i] = Matrix3.Identity;
-                    continue;
-                }
                 
                 interpolatedFrame[i] = MatrixHelper.Lerp(Frames[frameA][bone.Index], Frames[frameB][bone.Index], t);
             }
 
-            currentFrameIndex = (currentFrameIndex + deltaTime * animationSpeed) % TotalFrames;
+            currentFrameIndex = (currentFrameIndex + deltaTime * (TickSpeed * animationSpeed)) % TotalFrames;
 
             return interpolatedFrame;
         }

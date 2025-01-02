@@ -20,7 +20,7 @@ namespace Graphics
         public Renderer(Camera3D camera)
         {
             Camera = camera;
-            Background = Color4.Black;
+            Background = Color4.White;
             Projection = Camera.GetProjectionMatrix();
             
         }
@@ -73,32 +73,48 @@ namespace Graphics
         public void RenderChunk(Chunk chunk, Shader shader, TextureAtlas2D texture)
         {
             
-            GraphicsDevice.Bind(shader);
+            shader.Bind();
             shader.SetUniform(Matrix4.CreateTranslation(chunk.Position) * Camera.GetViewMatrix() * Projection, "u_transformations");
             
-            GraphicsDevice.Bind(chunk.Mesh.VertexBuffer);
-            GraphicsDevice.Bind(chunk.Mesh.IndexBuffer);
-            GraphicsDevice.Bind(chunk.Mesh.BufferStructure);
+            chunk.Mesh.VertexBuffer.Bind();
+            chunk.Mesh.IndexBuffer.Bind();
+            chunk.Mesh.BufferStructure.Bind();
             
-            GraphicsDevice.Bind(texture);
+            texture.Bind();
 
             chunk.UpdateIfDirty();
             GL.DrawElements(PrimitiveType.Triangles, chunk.Mesh.IndexBuffer.Count(), DrawElementsType.UnsignedInt, IntPtr.Zero);
+            ResetGLState();
         }
 
-        public void RenderModel(Model model, Vector3 position, Matrix3[] animationFrame, Shader shader, TextureAtlas2D texture)
+        public void RenderModel(Model model, Vector3 position, Matrix3[] animationFrame, Shader shader)
         {
-            GraphicsDevice.Bind(shader);
+            shader.Bind();
+            //TextureManager.BindTextureBuffer();
+            model.Texture.Bind();
             shader.SetUniform(animationFrame, "framesBoneMatrices");
+            //shader.SetUniform(model.TextureIndex, "u_textureHandle");
             shader.SetUniform(Matrix4.CreateTranslation(position) * Camera.GetViewMatrix() * Projection, "u_transformations");
+
+            model.Mesh.VertexBuffer.Bind();
+            model.Mesh.IndexBuffer.Bind();
+            model.Mesh.BufferStructure.Bind();
+
+            //GraphicsDevice.Bind(texture);
+            //TextureManager.BindTextureBuffer();
             
-            GraphicsDevice.Bind(model.Mesh.VertexBuffer);
-            GraphicsDevice.Bind(model.Mesh.IndexBuffer);
-            GraphicsDevice.Bind(model.Mesh.BufferStructure);
-
-            GraphicsDevice.Bind(texture);
-
             GL.DrawElements(PrimitiveType.Triangles, model.Mesh.IndexBuffer.Count(), DrawElementsType.UnsignedInt, IntPtr.Zero);
+            ResetGLState();
+        }
+
+
+        public void ResetGLState()
+        {
+            GL.BindVertexArray(0);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
+            GL.BindTexture(TextureTarget.Texture2D, 0);
+            GL.UseProgram(0);
         }
     }
 }

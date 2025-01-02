@@ -33,7 +33,7 @@ namespace Resources.Components
 
             int length = stream.Read<int>();
             Data = new byte[length];
-
+            
             stream.ReadExactly(Data, 0, length);
         }
     }

@@ -24,8 +24,8 @@ namespace Resources.Components
         public Animation[] Animations { get; private set; }
         public Animation? GetAnimation(string name) => Animations.FirstOrDefault(a => a.Name == name);
         public Bone[] GetBones() => Skeleton;
-        private long textureHandle = -1;
-        
+        public int TextureIndex { get; private set; } = -1;
+        public Texture2D Texture { get; private set; }
         public Model(Stream stream) => Read(stream);
         public void CreateResourceFromData(Stream stream) => Read(stream);
         
@@ -71,9 +71,9 @@ namespace Resources.Components
             
             bool hasTexture = stream.ReadByte() == 1;
             
-            if (hasTexture)
-                textureHandle = TextureManager.AddTexture(new Bitmap(stream));
-            
+            // if (hasTexture)
+            //     TextureIndex = TextureManager.AddTexture(new Bitmap(stream));
+            Texture = GraphicsDevice.AllocateTexture(new Bitmap(stream));
             Mesh = new Mesh<BonedVertex>()
             {
                 BufferStructure = GraphicsDevice.AllocateArrayStructure(),
@@ -83,7 +83,7 @@ namespace Resources.Components
 
             Mesh.BufferStructure.SetVertexArray(Mesh.VertexBuffer);
 
-            Mesh.BufferStructure.AddAttribute(3, VertexAttribType.Float, false, 0);
+            Mesh.BufferStructure.AddAttribute(3, VertexAttribType.Float);
             Mesh.BufferStructure.AddAttribute(2, VertexAttribType.Float, false, Marshal.SizeOf<Vector3>());
             Mesh.BufferStructure.AddAttribute(1, VertexAttribType.Int, false, Marshal.SizeOf<Vector3>() + Marshal.SizeOf<Vector2>());
             Mesh.BufferStructure.AddAttribute(1, VertexAttribType.Float, false, Marshal.SizeOf<Vector3>() + Marshal.SizeOf<Vector2>() + sizeof(int));
@@ -95,7 +95,8 @@ namespace Resources.Components
             Mesh.IndexBuffer.Dispose();
             Mesh.VertexBuffer.Dispose();
             Mesh.BufferStructure.Dispose();
-            TextureManager.UnloadTexture(textureHandle);
+            Texture.Dispose();
+            //TextureManager.UnloadTexture(TextureIndex);
             GC.SuppressFinalize(this);
         }
     }

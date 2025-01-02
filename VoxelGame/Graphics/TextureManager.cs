@@ -12,22 +12,20 @@ public static class TextureManager // TODO: make a check for textures that have 
     private static long[] liveIndex = new long[100];
     private static GpuShaderStorageBuffer<long> textureHandleBuffer;
     private static Queue<int> unusedIndexes = new Queue<int>();
-    private static int highestIndex = 0;
-
+    private static int highestIndex = 0; // starts at one to prevent confusion ( trying to keep 0 as NULL )
     public static int TextureHeapSize { get; private set; }
 
     public static void Init()
     {
         textureHandleBuffer = GraphicsDevice.AllocateShaderBuffer<long>(100, BufferUsageHint.StaticRead, BindingPoints.TEXTURE_HANDLES);
     }
-
+    public static void BindTextureBuffer() => textureHandleBuffer.Bind();
     // Returns the handle of the texture in the texture manager.
-
-    public static long AddTexture(Bitmap bitmap)
+    public static int AddTexture(Bitmap bitmap)
     {
-        return AddTexture(GraphicsDevice.AllocateTexture(bitmap, TextureUnit.Texture0));
+        return AddTexture(GraphicsDevice.AllocateTexture(bitmap));
     }
-    public static long AddTexture(Texture2D texture)
+    public static int AddTexture(Texture2D texture)
     {
         if (texture.Handle == 0)
             texture.MakeResident();
@@ -45,18 +43,18 @@ public static class TextureManager // TODO: make a check for textures that have 
 
         TextureHeapSize += texture.Width * texture.Height;
         
-        return texture.Handle;
+        return index;
     }
 
     public static Texture2D GetTexture(int index) => textures[index];
-    public static void UnloadTexture(long index) // should fix this but lazy?
+    public static void UnloadTexture(int index) // should fix this but lazy?
     {
-        Texture2D texture = textures[(int)index];
+        Texture2D texture = textures[index];
         
         textures.Remove(texture);
         
         liveIndex[index] = 0;
-        unusedIndexes.Enqueue((int)index);
+        unusedIndexes.Enqueue(index);
         
         texture.MakeNonResident();
         texture.Dispose();

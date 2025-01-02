@@ -134,11 +134,8 @@ namespace VoxelGame
         {
 
             Renderer.Clear();
-
-            
-            Renderer.RenderModel(model, Vector3.Zero, animation, modelShader, texture);
-            //TODO: fix Y axis does not work.
             //Renderer.RenderSingleVoxel(Voxels.VoxelType.DIRT, new Vector3(0, 7, 0), GameContent.GetShape("Object_4"), shader, texture);
+            Renderer.RenderModel(model, Vector3.Zero, animation, modelShader);
             //Renderer.RenderChunk(world.GetChunk(0, 0, 0), chunkShader, texture);
             //Renderer.RenderChunk(world.GetChunk(1, 0, 0), chunkShader, texture);
             //Renderer.RenderChunk(world.GetChunk(0, 0, 1), chunkShader, texture);

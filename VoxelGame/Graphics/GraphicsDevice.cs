@@ -120,14 +120,14 @@ namespace Graphics
         {
             return new GpuBufferStructure(GL.GenVertexArray());
         }
-        public static Texture2D AllocateTexture(Bitmap? bitmap, TextureUnit unit)
+        public static Texture2D AllocateTexture(Bitmap? bitmap)
         {
-            GL.GenTextures(1, out int pointer);
+            GL.CreateTextures(TextureTarget.Texture2D, 1, out int pointer);
 
             if(pointer is 0)
                 throw new Exception("Failed to allocate GL texture");
 
-            Texture2D texture = new Texture2D(unit, pointer);
+            Texture2D texture = new Texture2D(pointer);
 
             if(bitmap is not null)
                 texture.Upload(bitmap);

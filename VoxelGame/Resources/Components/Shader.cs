@@ -85,7 +85,40 @@ namespace Graphics.GpuComputing
 
             GL.UniformMatrix3(location, matrices.Length, false, matrixBuffer);
         }
+        public void SetUniform(Matrix4[] matrices, string name)
+        {
+            int location = GL.GetUniformLocation(pointer, name);
 
+            if (location == -1)
+                throw new ArgumentException($"Uniform {name} does not exist");
+
+            int requiredSize = matrices.Length * 16; // Each Matrix4 has 16 elements
+
+            if (matrixBuffer == null || matrixBuffer.Length < requiredSize)
+                matrixBuffer = new float[requiredSize];
+
+            for (int i = 0; i < matrices.Length; i++)
+            {
+                matrixBuffer[i * 16 + 0] = matrices[i].M11;
+                matrixBuffer[i * 16 + 1] = matrices[i].M21;
+                matrixBuffer[i * 16 + 2] = matrices[i].M31;
+                matrixBuffer[i * 16 + 3] = matrices[i].M41;
+                matrixBuffer[i * 16 + 4] = matrices[i].M12;
+                matrixBuffer[i * 16 + 5] = matrices[i].M22;
+                matrixBuffer[i * 16 + 6] = matrices[i].M32;
+                matrixBuffer[i * 16 + 7] = matrices[i].M42;
+                matrixBuffer[i * 16 + 8] = matrices[i].M13;
+                matrixBuffer[i * 16 + 9] = matrices[i].M23;
+                matrixBuffer[i * 16 + 10] = matrices[i].M33;
+                matrixBuffer[i * 16 + 11] = matrices[i].M43;
+                matrixBuffer[i * 16 + 12] = matrices[i].M14;
+                matrixBuffer[i * 16 + 13] = matrices[i].M24;
+                matrixBuffer[i * 16 + 14] = matrices[i].M34;
+                matrixBuffer[i * 16 + 15] = matrices[i].M44;
+            }
+
+            GL.UniformMatrix4(location, matrices.Length, false, matrixBuffer);
+        }
         public void SetUniform(Matrix4 matrix, string name)
         {
             int location = GL.GetUniformLocation(pointer, name);
@@ -125,6 +158,17 @@ namespace Graphics.GpuComputing
 
             GL.Uniform1(location, number);
         }
+        
+        public void SetUniform(long number, string name)
+        {
+            int location = GL.GetUniformLocation(pointer, name);
+
+            if (location == -1)
+                throw new ArgumentException($"uniform {name} does not exist");
+            
+            GL.Uniform1(location, number);
+        }
+
 
         public int GetPointer() => pointer;
         public void Bind() => GL.UseProgram(pointer);
