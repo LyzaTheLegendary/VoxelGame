@@ -30,23 +30,22 @@ namespace Resources.Components
             }
         }
 
-        public Matrix3[] GetFrame(Bone[] bones, ref float currentFrameIndex, float deltaTime, float animationSpeed = 1f)
+        public Matrix3[] GetFrame(IEnumerable<Bone> bones, ref float currentFrameIndex, float deltaTime, float animationSpeed = 1f)
         {
             if (TotalFrames < 2)
                 throw new InvalidOperationException("Animation must have at least two frames for interpolation.");
-
+            
             Matrix3[] interpolatedFrame = new Matrix3[BoneCount];
 
             int frameA = (int)Math.Floor(currentFrameIndex) % TotalFrames;
             int frameB = (frameA + 1) % TotalFrames;
 
-            float t = currentFrameIndex - frameA;
+            float lastFrame = currentFrameIndex - frameA;
 
             for (int i = 0; i < BoneCount; i++)
             {
-                Bone bone = bones[i];
-                
-                interpolatedFrame[i] = MatrixHelper.Lerp(Frames[frameA][bone.Index], Frames[frameB][bone.Index], t);
+                Bone bone = bones.ElementAt(i);
+                interpolatedFrame[i] = MatrixHelper.Lerp(Frames[frameA][bone.Index], Frames[frameB][bone.Index], lastFrame);
             }
 
             currentFrameIndex = (currentFrameIndex + deltaTime * (TickSpeed * animationSpeed)) % TotalFrames;
