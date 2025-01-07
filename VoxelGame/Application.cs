@@ -125,7 +125,8 @@ namespace VoxelGame
             Renderer.Camera.InputController(KeyboardState, MouseState, (float)args.Time);
 
 
-            animation = model.GetAnimation("Bend").GetFrame(model.GetBones(), ref frame, (float)args.Time);
+            animation = model.GetAnimation("Walk").GetFrame(model.GetBones(), ref frame, (float)args.Time);
+            
 
             base.OnUpdateFrame(args);
         }

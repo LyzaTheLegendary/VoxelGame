@@ -72,8 +72,12 @@ namespace Resources.Components
             bool hasTexture = stream.ReadByte() == 1;
             
             // if (hasTexture)
-            //     TextureIndex = TextureManager.AddTexture(new Bitmap(stream));
-            Texture = GraphicsDevice.AllocateTexture(new Bitmap(stream));
+            //     TextureIndex = TextureManager.AddTexture(new Bitmap(stream));\
+            if (hasTexture)
+                Texture = GraphicsDevice.AllocateTexture(new Bitmap(stream));
+            else
+                Texture = null;
+            
             Mesh = new Mesh<BonedVertex>()
             {
                 BufferStructure = GraphicsDevice.AllocateArrayStructure(),
@@ -86,7 +90,7 @@ namespace Resources.Components
             Mesh.BufferStructure.AddAttribute(3, VertexAttribType.Float);
             Mesh.BufferStructure.AddAttribute(2, VertexAttribType.Float, false, Marshal.SizeOf<Vector3>());
             Mesh.BufferStructure.AddAttribute(1, VertexAttribType.Int, false, Marshal.SizeOf<Vector3>() + Marshal.SizeOf<Vector2>());
-            Mesh.BufferStructure.AddAttribute(1, VertexAttribType.Float, false, Marshal.SizeOf<Vector3>() + Marshal.SizeOf<Vector2>() + sizeof(int));
+            //Mesh.BufferStructure.AddAttribute(1, VertexAttribType.Float, false, Marshal.SizeOf<Vector3>() + Marshal.SizeOf<Vector2>() + sizeof(int));
         }
 
         public void Dispose()

@@ -41,11 +41,20 @@ namespace Resources.Components
             int frameB = (frameA + 1) % TotalFrames;
 
             float lastFrame = currentFrameIndex - frameA;
-
+            
             for (int i = 0; i < BoneCount; i++)
             {
                 Bone bone = bones.ElementAt(i);
-                interpolatedFrame[i] = MatrixHelper.Lerp(Frames[frameA][bone.Index], Frames[frameB][bone.Index], lastFrame);
+
+                // Convert rotation matrices to quaternions
+                Quaternion rotationA = Quaternion.FromMatrix(Frames[frameA][bone.Index]);
+                Quaternion rotationB = Quaternion.FromMatrix(Frames[frameB][bone.Index]);
+
+                // Perform Slerp interpolation
+                Quaternion interpolatedRotation = MatrixHelper.Slerp(rotationA, rotationB, lastFrame);
+
+                // Convert the interpolated quaternion back to a matrix
+                interpolatedFrame[i] = Matrix3.CreateFromQuaternion(interpolatedRotation);
             }
 
             currentFrameIndex = (currentFrameIndex + deltaTime * (TickSpeed * animationSpeed)) % TotalFrames;

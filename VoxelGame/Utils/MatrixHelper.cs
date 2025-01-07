@@ -1,4 +1,5 @@
 ﻿using OpenTK.Mathematics;
+using VoxelGame.Utils;
 
 namespace Utils
 {
@@ -29,6 +30,48 @@ namespace Utils
         public static float Lerp(float a, float b, float t)
         {
             return a + (b - a) * t;
+        }
+        
+        public static Quaternion Slerp(Quaternion from, Quaternion to, float t)
+        {
+            t = MathHelper.Clamp(t, 0f, 1f);
+
+            float dot = QuaternionHelper.Dot(from, to);
+            
+            if (dot < 0.0f)
+            {
+                to = new Quaternion(-to.X, -to.Y, -to.Z, -to.W);
+                dot = -dot;
+            }
+
+            const float DOT_THRESHOLD = 0.9995f;
+
+            if (dot > DOT_THRESHOLD)
+            {
+                Quaternion result = new Quaternion(
+                    from.X + t * (to.X - from.X),
+                    from.Y + t * (to.Y - from.Y),
+                    from.Z + t * (to.Z - from.Z),
+                    from.W + t * (to.W - from.W)
+                );
+                return result.Normalized();
+            }
+
+            // Slerp
+            float theta0 = (float)Math.Acos(dot);
+            float theta = theta0 * t;
+            float sinTheta = (float)Math.Sin(theta);
+            float sinTheta0 = (float)Math.Sin(theta0);
+
+            float s0 = (float)Math.Cos(theta) - dot * sinTheta / sinTheta0;
+            float s1 = sinTheta / sinTheta0;
+
+            return new Quaternion(
+                s0 * from.X + s1 * to.X,
+                s0 * from.Y + s1 * to.Y,
+                s0 * from.Z + s1 * to.Z,
+                s0 * from.W + s1 * to.W
+            );
         }
     }
 }

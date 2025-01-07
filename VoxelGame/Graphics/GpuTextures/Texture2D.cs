@@ -33,6 +33,8 @@ namespace Graphics.GpuTextures
             GL.TextureParameter(pointer, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
             GL.TextureParameter(pointer, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
             GL.TextureParameter(pointer, TextureParameterName.TextureMagFilter, (int)TextureMinFilter.Nearest);
+                
+            GL.GenerateTextureMipmap(pointer);
         }
         public int GetPointer() => pointer;
         public void Bind()
